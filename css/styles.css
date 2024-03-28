@@ -1128,20 +1128,9 @@ form span {
   padding: 3rem 0 5rem 0;
 }
 
-.pagination span {
-  display: inline-block;
-  padding: 1rem 1.5rem;
-  border: 1px solid #0A59CC;
-  font-size: 1.8rem;
-  margin-bottom: 2rem;
-  cursor: pointer;
-  transition: all 300ms ease-in-out;
-}
-
-.pagination span:hover {
-  border: 1px solid #0A59CC;
+.pagination .see-more {
   background-color: #0A59CC;
-  color: #fff;
+  color: white ;
 }
 
 /* Cart Items */
