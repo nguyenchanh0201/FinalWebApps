@@ -1,7 +1,4 @@
-.submit {
-    width: 70px;
-    background-color: #2579f2;
-    color: #ffffff;
-    border-radius: 8px;
-    box-shadow: 2px 2px 4px rgba(0, 0, 0, .4);
-  }
+.see-more-btn {
+  color: #0A59CC;
+  cursor: pointer;
+}
