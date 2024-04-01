@@ -14,6 +14,7 @@
     <!-- Custom StyleSheet -->
     <link rel="stylesheet" href="./css/styles.css" />
     <link rel="stylesheet" href="./css/about.css">
+    <link rel="stylesheet" href="./css/search.css" />
     
     <title>ecommerce Website</title>
 </head>
@@ -42,7 +43,7 @@
                         <a href="index.php" class="nav-link">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a href="product.html" class="nav-link">Shop</a>
+                        <a href="search.php" class="nav-link">Shop</a>
                     </li>
                     <li class="nav-item">
                         <a href="terms.xml" class="nav-link">Terms</a>
@@ -242,8 +243,8 @@
     </section>
     <section class="pagination">
       <div class="container">
-        <span>1</span> <span>2</span> <span>3</span> <span>4</span>
-        <span><i class="bx bx-right-arrow-alt"></i></span>
+        <!-- button right here -->
+        <span class="see-more-btn">See more</span>
       </div>
     </section>
     <!-- Footer -->
