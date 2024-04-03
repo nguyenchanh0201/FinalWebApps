@@ -1,10 +1,9 @@
 <?php
 
-session_start();
 
-if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
-    header("location: login.html");
-}
+session_start();
+include 'config.php';
+
 
 ?>
 
@@ -19,9 +18,15 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
 
     <!-- Boxicons -->
     <link href="https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css" rel="stylesheet" />
+    
     <!-- Glide js -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Glide.js/3.4.1/css/glide.core.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Glide.js/3.4.1/css/glide.theme.css">
+    <!-- Bootstrap icon -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
     <!-- Custom StyleSheet -->
     <link rel="stylesheet" href="./css/styles.css" />
     <title>ecommerce Website</title>
@@ -43,7 +48,7 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
         </div>
         <div class="navigation">
             <div class="nav-center container d-flex">
-                <a href="index.html" class="logo">
+                <a href="index.php" class="logo">
                     <h1>The Mart</h1>
                 </a>
 
@@ -63,8 +68,19 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
                     <li class="nav-item">
                         <a href="contact.html" class="nav-link">Contact</a>
                     </li>
+                    
+                    
                     <li class="nav-item">
-                        <a href="#" class="nav-link"><?php echo "Welcome " . $_SESSION['username'] ?></a>
+                        <a href="#" class="nav-link">
+                            <?php 
+                                if(isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) {
+                                    echo "Welcome " . $_SESSION['username'];
+                                }
+                                else {
+                                    echo "";
+                                }
+                                  ?>
+                        </a>
                     </li>
                    
                 </ul>
@@ -84,9 +100,16 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
                         <i class="bx bx-cart"></i>
                         <span class="d-flex">0</span>
                     </a>
-                    <a href="logout.php" class="icon">
-                        <i class="bx bx-log-out"></i>
-                    </a>
+                    <?php
+                    if(isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) {
+                        echo '<a href="logout.php" class="icon">
+                        <i class="bx bx-log-out"></i> </a>';
+                    }
+                    else {
+                        echo ' ';
+                    }
+                    ?>
+                    
                 </div>
 
                 <div class="hamburger">
@@ -108,7 +131,33 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
                                     <a href="product.html" class="hero-btn">SHOP NOW</a>
                                 </div>
                                 <div class="right">
-                                    <img class="img1" src="./images/hero-1.png" alt="">
+                                    <img class="img1" src="./images/kd.png" alt="">
+                                </div>
+                            </div>
+                        </li>
+                        <li class="glide__slide">
+                            <div class="center">
+                                <div class="left">
+                                    <span>New Inspiration 2022</span>
+                                    <h1>THE PERFECT MATCH!</h1>
+                                    <p>Trending from men's and women's style collection</p>
+                                    <a href="product.html" class="hero-btn">SHOP NOW</a>
+                                </div>
+                                <div class="right">
+                                    <img class="img2" src="./images/jp3.png" alt="">
+                                </div>
+                            </div>
+                        </li>
+                        <li class="glide__slide">
+                            <div class="center">
+                                <div class="left">
+                                    <span>New Inspiration 2022</span>
+                                    <h1>THE PERFECT MATCH!</h1>
+                                    <p>Trending from men's and women's style collection</p>
+                                    <a href="product.html" class="hero-btn">SHOP NOW</a>
+                                </div>
+                                <div class="right">
+                                    <img class="img2" src="./images/kb24.png" alt="">
                                 </div>
                             </div>
                         </li>
@@ -129,27 +178,37 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
                 </div>
             </div>
         </div>
+        
+
+
+        
     </header>
 
     <!-- Categories Section -->
     <section class="section category">
         <div class="cat-center">
             <div class="cat">
-                <img src="./images/cat3.jpg" alt="" />
+                <img src="./images/nike.png" alt="" />
                 <div>
-                    <p>WOMEN'S WEAR</p>
+                    <p>NIKE</p>
                 </div>
             </div>
             <div class="cat">
-                <img src="./images/cat2.jpg" alt="" />
+                <img src="./images/adidas.png" alt="" />
                 <div>
-                    <p>ACCESSORIES</p>
+                    <p>ADIDAS</p>
                 </div>
             </div>
             <div class="cat">
-                <img src="./images/cat1.jpg" alt="" />
+                <img src="./images/puma.png" alt="" />
                 <div>
-                    <p>MEN'S WEAR</p>
+                    <p>PUMA</p>
+                </div>
+            </div>
+            <div class="cat">
+                <img src="./images/nb.png" alt="" />
+                <div>
+                    <p>NEW BALANCE</p>
                 </div>
             </div>
             
@@ -163,148 +222,69 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
             <p>All the latest picked from designer of our store</p>
         </div>
 
-        <div class="product-center">
-            <div class="product-item">
-                <div class="overlay">
-                    <a href="productDetails.html" class="product-thumb">
-                        <img src="./images/product-1.jpg" alt="" />
-                    </a>
-                </div>
-                <div class="product-info">
-                    <span>MEN'S CLOTHES</span>
-                    <a href="productDetails.html">Quis Nostrud Exercitation</a>
-                    <h4>$700</h4>
-                </div>
-                <ul class="icons">
-                    <li><i class="bx bx-heart"></i></li>
-                    <li><i class="bx bx-search"></i></li>
-                    <li><i class="bx bx-cart"></i></li>
-                </ul>
+        <div class="product-center container">
+        <?php
+            $select_query = mysqli_query($conn, "SELECT * FROM products");
+            if(mysqli_num_rows($select_query)>0) {
+                while($fetch_product = mysqli_fetch_assoc($select_query)){
+                  ?>
+          <div class="product-item">
+            <div class="overlay">
+              <a href="productDetails.html" class="product-thumb">
+                <img src="<?php echo $fetch_product['image'] ?>" alt="" />
+              </a>
+              <span class="discount">40%</span>
             </div>
-            <div class="product-item">
-                <div class="overlay">
-                    <a href="" class="product-thumb">
-                        <img src="./images/product-3.jpg" alt="" />
-                    </a>
-                    <span class="discount">50%</span>
-                </div>
+            <div class="product-info">
+          
+            
+            <span><?php echo $fetch_product['category'] ?></span>
+            <form action="" method="post" class="form-submit">
+              <a href="productDetails.html"><?php echo $fetch_product['name'] ?></a>
+              <h4>$<?php echo $fetch_product['price'] ?></h4>
 
-                <div class="product-info">
-                    <span>MEN'S CLOTHES</span>
-                    <a href="">Sonata White Men’s Shirt</a>
-                    <h4>$800</h4>
-                </div>
-                <ul class="icons">
-                    <li><i class="bx bx-heart"></i></li>
-                    <li><i class="bx bx-search"></i></li>
-                    <li><i class="bx bx-cart"></i></li>
-                </ul>
+              <input type="hidden" name="product_name">
+              <input type="hidden" name="product_price">
+              <input type="hidden" name="product_image">
+
             </div>
-            <div class="product-item">
-                <div class="overlay">
-                    <a href="" class="product-thumb">
-                        <img src="./images/product-2.jpg" alt="" />
-                    </a>
-                </div>
-                <div class="product-info">
-                    <span>MEN'S CLOTHES</span>
-                    <a href="">Concepts Solid Pink Men’s Polo</a>
-                    <h4>$150</h4>
-                </div>
-                <ul class="icons">
-                    <li><i class="bx bx-heart"></i></li>
-                    <li><i class="bx bx-search"></i></li>
-                    <li><i class="bx bx-cart"></i></li>
-                </ul>
-            </div>
-            <div class="product-item">
-                <div class="overlay">
-                    <a href="" class="product-thumb">
-                        <img src="./images/product-4.jpg" alt="" />
-                    </a>
-                    <span class="discount">50%</span>
-                </div>
-                <div class="product-info">
-                    <span>MEN'S CLOTHES</span>
-                    <a href="">Edor do eiusmod tempor</a>
-                    <h4>$900</h4>
-                </div>
-                <ul class="icons">
-                    <li><i class="bx bx-heart"></i></li>
-                    <li><i class="bx bx-search"></i></li>
-                    <li><i class="bx bx-cart"></i></li>
-                </ul>
-            </div>
-            <div class="product-item">
-                <div class="overlay">
-                    <a href="" class="product-thumb">
-                        <img src="./images/product-5.jpg" alt="" />
-                    </a>
-                </div>
-                <div class="product-info">
-                    <span>MEN'S CLOTHES</span>
-                    <a href="">Edor do eiusmod tempor</a>
-                    <h4>$100</h4>
-                </div>
-                <ul class="icons">
-                    <li><i class="bx bx-heart"></i></li>
-                    <li><i class="bx bx-search"></i></li>
-                    <li><i class="bx bx-cart"></i></li>
-                </ul>
-            </div>
-            <div class="product-item">
-                <div class="overlay">
-                    <a href="" class="product-thumb">
-                        <img src="./images/product-6.jpg" alt="" />
-                    </a>
-                </div>
-                <div class="product-info">
-                    <span>MEN'S CLOTHES</span>
-                    <a href="">Edor do eiusmod tempor</a>
-                    <h4>$500</h4>
-                </div>
-                <ul class="icons">
-                    <li><i class="bx bx-heart"></i></li>
-                    <li><i class="bx bx-search"></i></li>
-                    <li><i class="bx bx-cart"></i></li>
-                </ul>
-            </div>
-            <div class="product-item">
-                <div class="overlay">
-                    <a href="" class="product-thumb">
-                        <img src="./images/product-7.jpg" alt="" />
-                    </a>
-                    <span class="discount">50%</span>
-                </div>
-                <div class="product-info">
-                    <span>MEN'S CLOTHES</span>
-                    <a href="">Edor do eiusmod tempor</a>
-                    <h4>$200</h4>
-                </div>
-                <ul class="icons">
-                    <li><i class="bx bx-heart"></i></li>
-                    <li><i class="bx bx-search"></i></li>
-                    <li><i class="bx bx-cart"></i></li>
-                </ul>
-            </div>
-            <div class="product-item">
-                <div class="overlay">
-                    <a href="" class="product-thumb">
-                        <img src="./images/product-2.jpg" alt="" />
-                    </a>
-                </div>
-                <div class="product-info">
-                    <span>MEN'S CLOTHES</span>
-                    <a href="">Edor do eiusmod tempor</a>
-                    <h4>$560</h4>
-                </div>
-                <ul class="icons">
-                    <li><i class="bx bx-heart"></i></li>
-                    <li><i class="bx bx-search"></i></li>
-                    <li><i class="bx bx-cart"></i></li>
-                </ul>
-            </div>
-        </div>
+            <ul class="icons">
+              <li>
+                
+                  <button type="submit" class="btn btn-link">
+                    <i class="bx bx-heart"></i>
+                  </button>
+                
+              </li>
+              <li>
+                
+                  <button type="submit" class="btn btn-link">
+                    <i class="bx bx-search"></i>
+                  </button>
+                
+              </li>
+              <li>
+                
+                  <button type="submit" class="btn btn-link" name="add_to_cart">
+                    <i class="bx bx-cart"></i>
+                  </button>
+                
+              </li>
+            </ul>
+            </form>
+            
+          
+          </div>
+          <?php
+            } 
+            } else {
+                echo "<div class='alert alert-danger'>No product found</div>";
+            }
+              ?>
+          
+
+          
+      </div>
     </section>
 
 
@@ -333,78 +313,69 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
             <p>All the latest picked from designer of our store</p>
         </div>
 
-        <div class="product-center">
-            <div class="product-item">
-                <div class="overlay">
-                    <a href="" class="product-thumb">
-                        <img src="./images/product-7.jpg" alt="" />
-                    </a>
-                    <span class="discount">50%</span>
-                </div>
-                <div class="product-info">
-                    <span>MEN'S CLOTHES</span>
-                    <a href="">Quis Nostrud Exercitation</a>
-                    <h4>$700</h4>
-                </div>
-                <ul class="icons">
-                    <li><i class="bx bx-heart"></i></li>
-                    <li><i class="bx bx-search"></i></li>
-                    <li><i class="bx bx-cart"></i></li>
-                </ul>
+        <div class="product-center container">
+        <?php
+            $select_query = mysqli_query($conn, "SELECT * FROM products");
+            if(mysqli_num_rows($select_query)>0) {
+                while($fetch_product = mysqli_fetch_assoc($select_query)){
+                  ?>
+          <div class="product-item">
+            <div class="overlay">
+              <a href="productDetails.html" class="product-thumb">
+                <img src="<?php echo $fetch_product['image'] ?>" alt="" />
+              </a>
+              <span class="discount">40%</span>
             </div>
-            <div class="product-item">
-                <div class="overlay">
-                    <a href="" class="product-thumb">
-                        <img src="./images/product-4.jpg" alt="" />
-                    </a>
-                </div>
+            <div class="product-info">
+          
+            
+            <span><?php echo $fetch_product['category'] ?></span>
+            <form action="" method="post" class="form-submit">
+              <a href="productDetails.html"><?php echo $fetch_product['name'] ?></a>
+              <h4>$<?php echo $fetch_product['price'] ?></h4>
 
-                <div class="product-info">
-                    <span>MEN'S CLOTHES</span>
-                    <a href="">Sonata White Men’s Shirt</a>
-                    <h4>$800</h4>
-                </div>
-                <ul class="icons">
-                    <li><i class="bx bx-heart"></i></li>
-                    <li><i class="bx bx-search"></i></li>
-                    <li><i class="bx bx-cart"></i></li>
-                </ul>
+              <input type="hidden" name="product_name">
+              <input type="hidden" name="product_price">
+              <input type="hidden" name="product_image">
+
             </div>
-            <div class="product-item">
-                <div class="overlay">
-                    <a href="" class="product-thumb">
-                        <img src="./images/product-1.jpg" alt="" />
-                    </a>
-                    <span class="discount">40%</span>
-                </div>
-                <div class="product-info">
-                    <span>MEN'S CLOTHES</span>
-                    <a href="">Concepts Solid Pink Men’s Polo</a>
-                    <h4>$150</h4>
-                </div>
-                <ul class="icons">
-                    <li><i class="bx bx-heart"></i></li>
-                    <li><i class="bx bx-search"></i></li>
-                    <li><i class="bx bx-cart"></i></li>
-                </ul>
-            </div>
-            <div class="product-item">
-                <div class="overlay">
-                    <a href="" class="product-thumb">
-                        <img src="./images/product-6.jpg" alt="" />
-                    </a>
-                </div>
-                <div class="product-info">
-                    <span>MEN'S CLOTHES</span>
-                    <a href="">Edor do eiusmod tempor</a>
-                    <h4>$900</h4>
-                </div>
-                <ul class="icons">
-                    <li><i class="bx bx-heart"></i></li>
-                    <li><i class="bx bx-search"></i></li>
-                    <li><i class="bx bx-cart"></i></li>
-                </ul>
-            </div>
+            <ul class="icons">
+              <li>
+                
+                  <button type="submit" class="btn btn-link">
+                    <i class="bx bx-heart"></i>
+                  </button>
+                
+              </li>
+              <li>
+                
+                  <button type="submit" class="btn btn-link">
+                    <i class="bx bx-search"></i>
+                  </button>
+                
+              </li>
+              <li>
+                
+                  <button type="submit" class="btn btn-link" name="add_to_cart">
+                    <i class="bx bx-cart"></i>
+                  </button>
+                
+              </li>
+            </ul>
+            </form>
+            
+          
+          </div>
+          <?php
+            } 
+            } else {
+                echo "<div class='alert alert-danger'>No product found</div>";
+            }
+              ?>
+          
+
+          
+      </div>
 
     </section>
 

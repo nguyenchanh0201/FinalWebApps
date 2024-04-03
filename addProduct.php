@@ -14,9 +14,10 @@ if (isset($_POST['add-product'])) {
     $product_img = $_FILES['product-img']['name'];
     $product_img_temp_name = $_FILES['product-img']['tmp_name'];
     $product_img_folder = "images/" . $product_img;
+    $product_categories = $_POST['product-categories'];
 
-    $insert_query = "INSERT INTO products (name, details, price,  image) VALUES 
-('$product_name','$product_details', '$product_price' , '$product_img_folder')";
+    $insert_query = "INSERT INTO products (name, details, price,  image, category) VALUES 
+('$product_name','$product_details', '$product_price' , '$product_img_folder','$product_categories')";
 
     $result = mysqli_query($conn, $insert_query) or die("Insert query failed");
 
@@ -124,9 +125,10 @@ if (isset($_POST['add-product'])) {
                 <h3 class="heading">Add Products</h3>
                 <form action="" class="add_product" method="post" enctype="multipart/form-data">
                     <input type="text" name="product-name" placeholder="Enter product name" class="input_fields" required>
-                    <input type="number" name="product-price" min="0"  placeholder="Enter product price" class="input_fields" required>
+                    <input type="number" name="product-price" min="0" step="0.01"  placeholder="Enter product price" class="input_fields" required>
                     <input type="text" name="product-details" placeholder="Enter product details" class="input_fields" required>
                     <input type="file" name="product-img" placeholder="Enter product image" class="input_fields" required accept="image/*">
+                    <input type="text" name="product-categories" placeholder="Enter product categories" class="input_fields" required>
                     <input type="submit" name="add-product" class="input_fields" required>
                 </form>
             </section>
