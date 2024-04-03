@@ -211,7 +211,7 @@ Hero Area
 
 .hero,
 .hero .glide__slides {
-  background-color: var(--grey2);
+  
   position: relative;
   height: calc(100vh - 6rem);
   margin: 0 4rem;
@@ -316,11 +316,11 @@ Hero Media Query
 
 @media only screen and (max-width: 567px) {
   .center .right img.img1 {
-    width: 30rem;
+    width: 45rem;
   }
 
   .center .right img.img2 {
-    width: 33rem;
+    width: 45rem;
   }
 
   .hero,
@@ -463,6 +463,7 @@ Hero Media Query
 }
 
 .product-item {
+  
   position: relative;
   width: 27rem;
   margin: 0 auto;

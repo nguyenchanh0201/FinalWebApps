@@ -8,11 +8,16 @@
         $update_product_name = $_POST['update_product_name'];
         $update_product_price = $_POST['update_product_price'];
         $update_product_details = $_POST['update_product_details'];
+
+        if($_FILES['update_product_image']['error'] == 0) {
         $update_product_image = $_FILES['update_product_image']['name'];
         $update_product_image_tmp_name = $_FILES['update_product_image']['tmp_name'];
         $update_product_image_folder = "images/" . $update_product_image;
-
+        
         $update_query = "UPDATE products SET name = '$update_product_name', details = '$update_product_details', price = '$update_product_price', image = '$update_product_image_folder' WHERE idProduct = $update_product_id";
+        } else {
+            $update_query = "UPDATE products SET name = '$update_product_name', details = '$update_product_details', price = '$update_product_price' WHERE idProduct = $update_product_id";
+        }
         $result = mysqli_query($conn, $update_query) or die("Update query failed");
 
         if ($result) {
@@ -129,9 +134,9 @@
                 <img src="<?php echo $fetch_data['image']?>" alt="" style="display: block; margin: auto;">
                 <input type="hidden" value="<?php echo $fetch_data['idProduct']?>" name="update_product_id">
                 <input type="text" class="input_fields fields" required placeholder="Enter Product Name" value="<?php echo $fetch_data['name']?>" name="update_product_name">
-                <input type="number" class="input_fields fields" required placeholder="Enter Product Price" value="<?php echo $fetch_data['price']?>" name="update_product_price">
+                <input type="number" class="input_fields fields" min="0" step="0.01" required placeholder="Enter Product Price" value="<?php echo $fetch_data['price']?>" name="update_product_price">
                 <input type="text" class="input_fields fields" required placeholder="Enter Product Details" value="<?php echo $fetch_data['details']?>" name="update_product_details">
-                <input type="file" class="input_fields fields" required accept="image/*" name="update_product_image">
+                <input type="file" class="input_fields fields"  accept="image/*" name="update_product_image">
                 <div class="btns">
                     <input type="submit" class="edit_btn" value="Update Product" name="update_product">
                     <input type="reset" class="cancel_btn" id="close-edit" value="Cancel">
