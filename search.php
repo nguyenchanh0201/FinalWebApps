@@ -1,13 +1,22 @@
 <?php
 include 'config.php';
-// if (isset($_POST['add_to_cart'])) {
-//   $product_name = $_POST['product_name'];
-//   $product_price = $_POST['product_price'];
-//   $product_image = $_POST['product_image'];
-//   $product_quantity = 1 ; 
+session_start(  );
+if (isset($_POST['add_to_cart'])) {
+  $product_name = $_POST['product_name'];
+  $product_price = $_POST['product_price'];
+  $product_image = $_POST['product_image'];
+  $product_quantity = 1 ; 
 
-//   $insert_product = mysqli_query($conn, "INSERT INTO cart (name, price, image, quantity) VALUES ('$product_name', '$product_price', '$product_image', $product_quantity)");
-// }
+  $select_cart = mysqli_query($conn, "SELECT * FROM cart WHERE name = '$product_name'");
+  if(mysqli_num_rows($select_cart)>0){
+    $fetch_cart = mysqli_fetch_assoc($select_cart);
+    $product_quantity = $fetch_cart['quantity'] + 1;
+    $update_cart = mysqli_query($conn, "UPDATE cart SET quantity = $product_quantity WHERE name = '$product_name'");
+  } else {
+    $insert_product = mysqli_query($conn, "INSERT INTO cart (name, price, image, quantity) VALUES ('$product_name', '$product_price', '$product_image', $product_quantity)");
+  }
+
+}
 
 ?>
 
@@ -75,10 +84,23 @@ include 'config.php';
           </li>
         </ul>
 
-        <div class="icons d-flex">
-          <a href="login.html" class="icon">
-            <i class="bx bx-user"></i>
-          </a>
+        <?php if(isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) { ?>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <?php echo $_SESSION['username']; ?>
+                            </a>
+                        </li>
+                    <?php } ?>
+                    </ul>
+
+                    <div class="icons d-flex">
+                        <?php if(isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) { ?>
+                            
+                        <?php } else { ?>
+                            <a href="login.html" class="icon">
+                                <i class="bx bx-user"></i>
+                            </a>
+                        <?php } ?>
 
           <form action="/form/submit" method="GET">
             <input type="text" name="text" class="search" placeholder="Search here!">
@@ -88,13 +110,17 @@ include 'config.php';
                       border-radius: 8px;
                       box-shadow: 2px 2px 4px rgba(0, 0, 0, .4);">
           </form>
-          <div class="icon">
+          <a href="favorites.php" class="icon">
             <i class="bx bx-heart"></i>
-            <span class="d-flex">0</span>
-          </div>
-          <a href="cart.html" class="icon">
+            <span class="d-flex"><?php $fav_num_result = mysqli_query($conn, "select count(*) as count from favorites");
+            $fav_num = mysqli_fetch_assoc($fav_num_result);
+            echo $fav_num['count'];?></span>
+          </a>
+          <a href="cart.php" class="icon">
             <i class="bx bx-cart"></i>
-            <span class="d-flex">0</span>
+            <span class="d-flex"><?php $cart_num_result = mysqli_query($conn, "select count(*) as count from cart");
+            $cart_num = mysqli_fetch_assoc($cart_num_result);
+            echo $cart_num['count']; ?></span>
           </a>
           <a href="logout.php" class="icon">
             <i class="bx bx-log-out"></i>
@@ -138,9 +164,9 @@ include 'config.php';
               <a href="productDetails.html"><?php echo $fetch_product['name'] ?></a>
               <h4><?php echo $fetch_product['price'] ?></h4>
 
-              <input type="hidden" name="product_name">
-              <input type="hidden" name="product_price">
-              <input type="hidden" name="product_image">
+              <input type="hidden" name="product_name" value="<?php echo $fetch_product['name'] ?>">
+              <input type="hidden" name="product_price" value="<?php echo $fetch_product['price'] ?>">
+              <input type="hidden" name="product_image" value="<?php echo $fetch_product['image'] ?>">
 
             </div>
             <ul class="icons">

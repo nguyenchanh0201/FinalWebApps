@@ -49,6 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                         header("location: index.php");
                         
                     } else {
+                        header("location: login.html");
                         echo "Wrong username or password , login with correct credentials";
                     }
                 }

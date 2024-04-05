@@ -31,5 +31,19 @@
             
         }
     }
+    //Delete favorites item
+    if (isset($_GET['delete_favorites'])) {
+        $delete_id = $_GET['delete_favorites'];
+        $delete_query = mysqli_query($conn, "DELETE FROM favorites WHERE id = '$delete_id'") or
+        die("Query failed");
+        if($delete_query){
+            echo "Deleted successfully";
+            header("Location: favorites.php");
+        }
+        else {
+            echo "Failed to delete";
+            
+        }
+    }
 
 ?>

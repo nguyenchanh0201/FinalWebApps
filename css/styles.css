@@ -108,10 +108,13 @@ Navigation
 .nav-center .nav-link {
   font-size: 1.8rem;
   padding: 1rem;
+  transition: all 0.3s ease;
 }
 
 .nav-center .nav-link:hover {
-  color: #0A59CC;
+  color: white;
+  background-color: #0A59CC;
+  transition-delay: 0.3s;
 }
 
 .nav-center .hamburger {
@@ -211,7 +214,7 @@ Hero Area
 
 .hero,
 .hero .glide__slides {
-  
+  background-color: var(--grey2);
   position: relative;
   height: calc(100vh - 6rem);
   margin: 0 4rem;
@@ -246,12 +249,14 @@ Hero Area
 }
 
 .hero .left .hero-btn {
+  all: unset;
   display: inline-block;
   padding: 1rem 3rem;
   font-size: 1.6rem;
   margin-top: 1rem;
   background-color: #0A59CC;
   color: white;
+
 }
 
 .hero .right {
@@ -263,7 +268,7 @@ Hero Area
 
 .hero .right img {
   position: absolute;
-  width: 55rem;
+  width:55rem ;
   opacity: 0;
   transition: all 1000ms ease-in-out;
 }
@@ -281,7 +286,7 @@ Hero Area
 }
 
 .glide__slide--active .center .right img {
-  bottom: -3%;
+  bottom: 1%;
   opacity: 1;
 }
 
@@ -313,14 +318,25 @@ Hero Media Query
     width: 100%;
   }
 }
+@media only screen and (max-width: 912px) {
+  .center .right img.img1 {
+    width: 50rem;
+  }
+  
+
+  .center .right img.img2 {
+    width: 55rem;
+  }
+}
 
 @media only screen and (max-width: 567px) {
   .center .right img.img1 {
-    width: 45rem;
+    width: 30rem;
   }
+  
 
   .center .right img.img2 {
-    width: 45rem;
+    width: 33rem;
   }
 
   .hero,
@@ -330,17 +346,37 @@ Hero Media Query
   }
 
   .hero .left h1 {
-    font-size: 3rem;
+    font-size: 2rem;
   }
 
   .hero .left span {
-    font-size: 1.4rem;
+    font-size: 1rem;
   }
+
   .hero .left p {
-    font-size: 1.5rem;
+    font-size: 1rem;
     width: 80%;
   }
+
+  .hero .left .hero-btn {
+    font-size: 0.8rem;
+    
+  }
+
+  
+  
 }
+@media only screen and (max-width: 375px) {
+  .center .right img.img1 {
+    width: 20rem;
+  }
+  
+
+  .center .right img.img2 {
+    width: 20rem;
+  }
+}
+
 
 /* Category Section */
 
