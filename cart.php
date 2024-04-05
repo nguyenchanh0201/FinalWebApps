@@ -16,6 +16,25 @@ if (isset($_POST['update_product_quantity'])) {
   }
 }
 
+//add to cart
+if (isset($_POST['add_to_cart'])) {
+  $product_name = $_POST['product_name'];
+  $product_price = $_POST['product_price'];
+  $product_image = $_POST['product_image'];
+  $product_quantity = 1 ; 
+
+  $insert_product = mysqli_query($conn, "INSERT INTO cart (name, price, image, quantity) VALUES ('$product_name', '$product_price', '$product_image', $product_quantity)");
+}
+// add to favorites
+if (isset($_POST['add_to_favorites'])) {
+  $product_name = $_POST['product_name'];
+  $product_price = $_POST['product_price'];
+  $product_image = $_POST['product_image'];
+
+  $insert_product = mysqli_query($conn, "INSERT INTO favorites (name, price, image) VALUES ('$product_name', '$product_price', '$product_image')");
+  
+}
+
 
 ?>
 
@@ -209,16 +228,17 @@ if (isset($_POST['update_product_quantity'])) {
                 <a href="productDetails.html"><?php echo $fetch_product['name'] ?></a>
                 <h4><?php echo $fetch_product['price'] ?></h4>
 
-                <input type="hidden" name="product_name">
-                <input type="hidden" name="product_price">
-                <input type="hidden" name="product_image">
+              <input type="hidden" name="product_name" value="<?php echo $fetch_product['name'] ?>">
+              <input type="hidden" name="product_price" value="<?php echo $fetch_product['price'] ?>">
+              <input type="hidden" name="product_image" value="<?php echo $fetch_product['image'] ?>">
 
             </div>
             <ul class="icons">
               <li>
 
-                <button type="submit" class="btn btn-link">
+                <button type="submit" class="btn btn-link" name="add_to_favorites">
                   <i class="bx bx-heart"></i>
+                  
                 </button>
 
               </li>
@@ -236,6 +256,7 @@ if (isset($_POST['update_product_quantity'])) {
                 </button>
 
               </li>
+            </form>
             </ul>
             </form>
 

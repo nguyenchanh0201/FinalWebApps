@@ -1,9 +1,9 @@
 <?php
 
-session_start();
+
 
 include 'config.php';
-
+session_start();
 ?>
 
 
@@ -56,7 +56,16 @@ include 'config.php';
                         <a href="contact.html" class="nav-link">Contact</a>
                     </li>
                     <li class="nav-item">
-                        <a href="#" class="nav-link"><?php echo "Welcome " . $_SESSION['username'] ?></a>
+                    <a href="#" class="nav-link">
+                            <?php 
+                                if(isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) {
+                                    echo $_SESSION['username'];
+                                }
+                                else {
+                                    echo "";
+                                }
+                                  ?>
+                        </a>
                     </li>
 
                 </ul>
@@ -76,9 +85,15 @@ include 'config.php';
                         <i class="bx bx-cart"></i>
                         <span class="d-flex">0</span>
                     </a>
-                    <a href="logout.php" class="icon">
-                        <i class="bx bx-log-out"></i>
-                    </a>
+                    <?php
+                    if(isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) {
+                        echo '<a href="logout.php" class="icon">
+                        <i class="bx bx-log-out"></i> </a>';
+                    }
+                    else {
+                        echo ' ';
+                    }
+                    ?>
                 </div>
 
                 <div class="hamburger">

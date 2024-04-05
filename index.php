@@ -4,6 +4,14 @@
 session_start();
 include 'config.php';
 
+if (isset($_POST['add_to_cart'])) {
+    $product_name = $_POST['product_name'];
+    $product_price = $_POST['product_price'];
+    $product_image = $_POST['product_image'];
+    $product_quantity = 1;
+
+    $insert_product = mysqli_query($conn, "INSERT INTO cart (name, price, image, quantity) VALUES ('$product_name', '$product_price', '$product_image', $product_quantity)");
+}
 
 ?>
 
@@ -18,15 +26,15 @@ include 'config.php';
 
     <!-- Boxicons -->
     <link href="https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css" rel="stylesheet" />
-    
+
     <!-- Glide js -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Glide.js/3.4.1/css/glide.core.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Glide.js/3.4.1/css/glide.theme.css">
     <!-- Bootstrap icon -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
     <!-- Custom StyleSheet -->
     <link rel="stylesheet" href="./css/styles.css" />
     <title>ecommerce Website</title>
@@ -36,7 +44,7 @@ include 'config.php';
     <!-- Header -->
     <header class="header" id="header">
         <!-- Top Nav -->
-        <div class="top-nav">
+        <!-- <div class="top-nav">
             <div class="container d-flex">
                 <p>Order Online Or Call Us:(+91) 8081886430,7376550891</p>
                 <ul class="d-flex">
@@ -45,11 +53,11 @@ include 'config.php';
                     <li><a href="contact.html">Contact</a></li>
                 </ul>
             </div>
-        </div>
+        </div> -->
         <div class="navigation">
             <div class="nav-center container d-flex">
                 <a href="index.php" class="logo">
-                    <h1>The Mart</h1>
+                    <h1>The Culture &#127936;</h1>
                 </a>
 
                 <ul class="nav-list d-flex">
@@ -57,7 +65,7 @@ include 'config.php';
                         <a href="index.php" class="nav-link">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a href="product.html" class="nav-link">Shop</a>
+                        <a href="search.php" class="nav-link">Shop</a>
                     </li>
                     <li class="nav-item">
                         <a href="terms.xml" class="nav-link">Terms</a>
@@ -68,130 +76,122 @@ include 'config.php';
                     <li class="nav-item">
                         <a href="contact.html" class="nav-link">Contact</a>
                     </li>
-                    
-                    
-                    <li class="nav-item">
-                        <a href="#" class="nav-link">
-                            <?php 
-                                if(isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) {
-                                    echo "Welcome " . $_SESSION['username'];
-                                }
-                                else {
-                                    echo "";
-                                }
-                                  ?>
-                        </a>
-                    </li>
-                   
+
+
+                    <?php if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) { ?>
+                        <li class="nav-item">
+                            <a href="profile.php" class="nav-link">
+                                <?php echo $_SESSION['username']; ?>
+                            </a>
+                        </li>
+                    <?php } ?>
                 </ul>
 
                 <div class="icons d-flex">
-                    <a href="login.html" class="icon">
-                        <i class="bx bx-user"></i>
-                    </a>
-                    <a href="search.html" class="icon">
+                    <?php if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) { ?>
+
+                    <?php } else { ?>
+                        <a href="login.html" class="icon">
+                            <i class="bx bx-user"></i>
+                        </a>
+                    <?php } ?>
+                    <a href="search.php" class="icon">
                         <i class="bx bx-search"></i>
                     </a>
-                    <div class="icon">
+                    <a href="favorites.php" class="icon">
                         <i class="bx bx-heart"></i>
-                        <span class="d-flex">0</span>
-                    </div>
-                    <a href="cart.html" class="icon">
-                        <i class="bx bx-cart"></i>
-                        <span class="d-flex">0</span>
+                        <span class="d-flex"><?php $fav_num_result = mysqli_query($conn, "select count(*) as count from favorites");
+                                                $fav_num = mysqli_fetch_assoc($fav_num_result);
+                                                echo $fav_num['count']; ?></span>
                     </a>
-                    <?php
-                    if(isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) {
-                        echo '<a href="logout.php" class="icon">
+                    <a href="cart.php" class="icon">
+                        <i class="bx bx-cart"></i>
+                        <span class="d-flex"><?php $cart_num_result = mysqli_query($conn, "select count(*) as count from cart");
+                                                $cart_num = mysqli_fetch_assoc($cart_num_result);
+                                                echo $cart_num['count']; ?></span>
+                    </a>
+                </div>
+
+
+
+                <?php
+                if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) {
+                    echo '<a href="logout.php" class="icon">
                         <i class="bx bx-log-out"></i> </a>';
-                    }
-                    else {
-                        echo ' ';
-                    }
-                    ?>
-                    
-                </div>
+                } else {
+                    echo ' ';
+                }
+                ?>
 
-                <div class="hamburger">
-                    <i class="bx bx-menu-alt-left"></i>
+            </div>
+
+
+
+            <div class="hero">
+                <div class="glide" id="glide_1">
+                    <div class="glide__track" data-glide-el="track">
+                        <ul class="glide__slides">
+                            <li class="glide__slide">
+                                <div class="center">
+                                    <div class="left">
+                                    <span>New Inspiration 2022</span>
+                                        <h1>THE PERFECT MATCH!</h1>
+                                        <p>Trending from men's and women's style collection</p>
+                                        <a href="product.html" class="hero-btn">SHOP NOW</a>
+                                    </div>
+                                    <div class="right">
+                                        <img class="img1" src="./images/kb24.png" alt="">
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="glide__slide">
+                                <div class="center">
+                                    <div class="left">
+                                        <span>New Inspiration 2022</span>
+                                        <h1>THE PERFECT MATCH!</h1>
+                                        <p>Trending from men's and women's style collection</p>
+                                        <a href="product.html" class="hero-btn">SHOP NOW</a>
+                                    </div>
+                                    <div class="right">
+                                        <img class="img2" src="./images/jp3.png" alt="">
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="glide__slide">
+                                <div class="center">
+                                    <div class="left">
+                                        <span>New Inspiration 2022</span>
+                                        <h1>THE PERFECT MATCH!</h1>
+                                        <p>Trending from men's and women's style collection</p>
+                                        <a href="product.html" class="hero-btn">SHOP NOW</a>
+                                    </div>
+                                    <div class="right">
+                                        <img class="img1" src="./images/carter.png" alt="">
+                                    </div>
+                                </div>
+                            </li>
+                            
+                        </ul>
+                    </div>
                 </div>
             </div>
-        </div>
-
-        <div class="hero">
-            <div class="glide" id="glide_1">
-                <div class="glide__track" data-glide-el="track">
-                    <ul class="glide__slides">
-                        <li class="glide__slide">
-                            <div class="center">
-                                <div class="left">
-                                    <span class="">New Inspiration 2022</span>
-                                    <h1 class="">NEW COLLECTION!</h1>
-                                    <p>Trending from men's and women's style collection</p>
-                                    <a href="product.html" class="hero-btn">SHOP NOW</a>
-                                </div>
-                                <div class="right">
-                                    <img class="img1" src="./images/kd.png" alt="">
-                                </div>
-                            </div>
-                        </li>
-                        <li class="glide__slide">
-                            <div class="center">
-                                <div class="left">
-                                    <span>New Inspiration 2022</span>
-                                    <h1>THE PERFECT MATCH!</h1>
-                                    <p>Trending from men's and women's style collection</p>
-                                    <a href="product.html" class="hero-btn">SHOP NOW</a>
-                                </div>
-                                <div class="right">
-                                    <img class="img2" src="./images/jp3.png" alt="">
-                                </div>
-                            </div>
-                        </li>
-                        <li class="glide__slide">
-                            <div class="center">
-                                <div class="left">
-                                    <span>New Inspiration 2022</span>
-                                    <h1>THE PERFECT MATCH!</h1>
-                                    <p>Trending from men's and women's style collection</p>
-                                    <a href="product.html" class="hero-btn">SHOP NOW</a>
-                                </div>
-                                <div class="right">
-                                    <img class="img2" src="./images/kb24.png" alt="">
-                                </div>
-                            </div>
-                        </li>
-                        <li class="glide__slide">
-                            <div class="center">
-                                <div class="left">
-                                    <span>New Inspiration 2022</span>
-                                    <h1>THE PERFECT MATCH!</h1>
-                                    <p>Trending from men's and women's style collection</p>
-                                    <a href="product.html" class="hero-btn">SHOP NOW</a>
-                                </div>
-                                <div class="right">
-                                    <img class="img2" src="./images/hero-2.png" alt="">
-                                </div>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-        
 
 
-        
+
+
     </header>
 
     <!-- Categories Section -->
     <section class="section category">
         <div class="cat-center">
             <div class="cat">
+                <a href="search.php/nike-basketball">
                 <img src="./images/nike.png" alt="" />
                 <div>
                     <p>NIKE</p>
                 </div>
+                </a>
+                
             </div>
             <div class="cat">
                 <img src="./images/adidas.png" alt="" />
@@ -211,7 +211,7 @@ include 'config.php';
                     <p>NEW BALANCE</p>
                 </div>
             </div>
-            
+
         </div>
     </section>
 
@@ -223,68 +223,68 @@ include 'config.php';
         </div>
 
         <div class="product-center container">
-        <?php
+            <?php
             $select_query = mysqli_query($conn, "SELECT * FROM products");
-            if(mysqli_num_rows($select_query)>0) {
-                while($fetch_product = mysqli_fetch_assoc($select_query)){
-                  ?>
-          <div class="product-item">
-            <div class="overlay">
-              <a href="productDetails.html" class="product-thumb">
-                <img src="<?php echo $fetch_product['image'] ?>" alt="" />
-              </a>
-              <span class="discount">40%</span>
-            </div>
-            <div class="product-info">
-          
-            
-            <span><?php echo $fetch_product['category'] ?></span>
-            <form action="" method="post" class="form-submit">
-              <a href="productDetails.html"><?php echo $fetch_product['name'] ?></a>
-              <h4>$<?php echo $fetch_product['price'] ?></h4>
+            if (mysqli_num_rows($select_query) > 0) {
+                while ($fetch_product = mysqli_fetch_assoc($select_query)) {
+            ?>
+                    <div class="product-item">
+                        <div class="overlay">
+                            <a href="productDetails.html" class="product-thumb">
+                                <img src="<?php echo $fetch_product['image'] ?>" alt="" />
+                            </a>
+                            <span class="discount">40%</span>
+                        </div>
+                        <div class="product-info">
 
-              <input type="hidden" name="product_name">
-              <input type="hidden" name="product_price">
-              <input type="hidden" name="product_image">
 
-            </div>
-            <ul class="icons">
-              <li>
-                
-                  <button type="submit" class="btn btn-link">
-                    <i class="bx bx-heart"></i>
-                  </button>
-                
-              </li>
-              <li>
-                
-                  <button type="submit" class="btn btn-link">
-                    <i class="bx bx-search"></i>
-                  </button>
-                
-              </li>
-              <li>
-                
-                  <button type="submit" class="btn btn-link" name="add_to_cart">
-                    <i class="bx bx-cart"></i>
-                  </button>
-                
-              </li>
-            </ul>
-            </form>
-            
-          
-          </div>
-          <?php
-            } 
+                            <span><?php echo $fetch_product['category'] ?></span>
+                            <form action="" method="post" class="form-submit">
+                                <a href="productDetails.html"><?php echo $fetch_product['name'] ?></a>
+                                <h4>$<?php echo $fetch_product['price'] ?></h4>
+
+                                <input type="hidden" name="product_name" value="<?php echo $fetch_product['name'] ?>">
+                                <input type="hidden" name="product_price" value="<?php echo $fetch_product['price'] ?>">
+                                <input type="hidden" name="product_image" value="<?php echo $fetch_product['image'] ?>">
+
+                        </div>
+                        <ul class="icons">
+                            <li>
+
+                                <button type="submit" class="btn btn-link" name="add_to_favorites">
+                                    <i class="bx bx-heart"></i>
+                                </button>
+
+                            </li>
+                            <li>
+
+                                <button type="submit" class="btn btn-link">
+                                    <i class="bx bx-search"></i>
+                                </button>
+
+                            </li>
+                            <li>
+
+                                <button type="submit" class="btn btn-link" name="add_to_cart">
+                                    <i class="bx bx-cart"></i>
+                                </button>
+
+                            </li>
+                        </ul>
+                        </form>
+
+
+                    </div>
+            <?php
+                }
             } else {
                 echo "<div class='alert alert-danger'>No product found</div>";
             }
-              ?>
-          
+            ?>
 
-          
-      </div>
+
+
+        </div>
     </section>
 
 
@@ -298,7 +298,7 @@ include 'config.php';
             <a href="product.html" class="btn btn-1">Discover Now</a>
         </div>
         <div class="right">
-            <img src="./images/banner.png" alt="">
+            <img src="./images/allen.png" alt="">
         </div>
     </section>
 
@@ -314,68 +314,68 @@ include 'config.php';
         </div>
 
         <div class="product-center container">
-        <?php
+            <?php
             $select_query = mysqli_query($conn, "SELECT * FROM products");
-            if(mysqli_num_rows($select_query)>0) {
-                while($fetch_product = mysqli_fetch_assoc($select_query)){
-                  ?>
-          <div class="product-item">
-            <div class="overlay">
-              <a href="productDetails.html" class="product-thumb">
-                <img src="<?php echo $fetch_product['image'] ?>" alt="" />
-              </a>
-              <span class="discount">40%</span>
-            </div>
-            <div class="product-info">
-          
-            
-            <span><?php echo $fetch_product['category'] ?></span>
-            <form action="" method="post" class="form-submit">
-              <a href="productDetails.html"><?php echo $fetch_product['name'] ?></a>
-              <h4>$<?php echo $fetch_product['price'] ?></h4>
+            if (mysqli_num_rows($select_query) > 0) {
+                while ($fetch_product = mysqli_fetch_assoc($select_query)) {
+            ?>
+                    <div class="product-item">
+                        <div class="overlay">
+                            <a href="productDetails.html" class="product-thumb">
+                                <img src="<?php echo $fetch_product['image'] ?>" alt="" />
+                            </a>
+                            <span class="discount">40%</span>
+                        </div>
+                        <div class="product-info">
 
-              <input type="hidden" name="product_name">
-              <input type="hidden" name="product_price">
-              <input type="hidden" name="product_image">
 
-            </div>
-            <ul class="icons">
-              <li>
-                
-                  <button type="submit" class="btn btn-link">
-                    <i class="bx bx-heart"></i>
-                  </button>
-                
-              </li>
-              <li>
-                
-                  <button type="submit" class="btn btn-link">
-                    <i class="bx bx-search"></i>
-                  </button>
-                
-              </li>
-              <li>
-                
-                  <button type="submit" class="btn btn-link" name="add_to_cart">
-                    <i class="bx bx-cart"></i>
-                  </button>
-                
-              </li>
-            </ul>
-            </form>
-            
-          
-          </div>
-          <?php
-            } 
+                            <span><?php echo $fetch_product['category'] ?></span>
+                            <form action="" method="post" class="form-submit">
+                                <a href="productDetails.html"><?php echo $fetch_product['name'] ?></a>
+                                <h4>$<?php echo $fetch_product['price'] ?></h4>
+
+                                <input type="hidden" name="product_name" value="<?php echo $fetch_product['name'] ?>">
+                                <input type="hidden" name="product_price" value="<?php echo $fetch_product['price'] ?>">
+                                <input type="hidden" name="product_image" value="<?php echo $fetch_product['image'] ?>">
+
+                        </div>
+                        <ul class="icons">
+                            <li>
+
+                                <button type="submit" class="btn btn-link">
+                                    <i class="bx bx-heart"></i>
+                                </button>
+
+                            </li>
+                            <li>
+
+                                <button type="submit" class="btn btn-link">
+                                    <i class="bx bx-search"></i>
+                                </button>
+
+                            </li>
+                            <li>
+
+                                <button type="submit" class="btn btn-link" name="add_to_cart">
+                                    <i class="bx bx-cart"></i>
+                                </button>
+
+                            </li>
+                        </ul>
+                        </form>
+
+
+                    </div>
+            <?php
+                }
             } else {
                 echo "<div class='alert alert-danger'>No product found</div>";
             }
-              ?>
-          
+            ?>
 
-          
-      </div>
+
+
+        </div>
 
     </section>
 
