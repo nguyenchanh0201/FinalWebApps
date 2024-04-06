@@ -1,3 +1,7 @@
+<?php
+include 'config.php';
+session_start();
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -34,7 +38,7 @@
     </div>
     <div class="navigation">
       <div class="nav-center container d-flex">
-        <a href="index.html" class="logo">
+        <a href="index.php" class="logo">
           <h1>The Mart</h1>
         </a>
 
@@ -43,7 +47,7 @@
             <a href="index.php" class="nav-link">Home</a>
           </li>
           <li class="nav-item">
-            <a href="product.html" class="nav-link">Shop</a>
+            <a href="search.php" class="nav-link">Shop</a>
           </li>
           <li class="nav-item">
             <a href="terms.xml" class="nav-link">Terms</a>
@@ -52,30 +56,56 @@
             <a href="about.html" class="nav-link">About</a>
           </li>
           <li class="nav-item">
-            <a href="contact.html" class="nav-link">Contact</a>
+            <a href="#" class="nav-link">Contact</a>
           </li>
         </ul>
 
-        <div class="icons d-flex">
-          <a href="login.html" class="icon">
-              <i class="bx bx-user"></i>
-          </a>
-          <a href="search.html" class="icon">
-              <i class="bx bx-search"></i>
-          </a>
-          <div class="icon">
-              <i class="bx bx-heart"></i>
-              <span class="d-flex">0</span>
-          </div>
-          <a href="cart.html" class="icon">
-              <i class="bx bx-cart"></i>
-              <span class="d-flex">0</span>
-          </a>
-          <a href="logout.php" class ="icon">
-             <i class="bx bx-log-out"></i>
-          </a>
-        </div>
-      </div>
+        <?php if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) { ?>
+                        <li class="nav-item">
+                            <a href="profile.php" class="nav-link">
+                                <?php echo $_SESSION['username']; ?>
+                            </a>
+                        </li>
+                    <?php } ?>
+                </ul>
+
+                <div class="icons d-flex">
+                    <?php if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) { ?>
+
+                    <?php } else { ?>
+                        <a href="login.html" class="icon">
+                            <i class="bx bx-user"></i>
+                        </a>
+                    <?php } ?>
+                    <a href="search.php" class="icon">
+                        <i class="bx bx-search"></i>
+                    </a>
+                    <a href="favorites.php" class="icon">
+                        <i class="bx bx-heart"></i>
+                        <span class="d-flex"><?php $fav_num_result = mysqli_query($conn, "select count(*) as count from favorites");
+                                                $fav_num = mysqli_fetch_assoc($fav_num_result);
+                                                echo $fav_num['count']; ?></span>
+                    </a>
+                    <a href="cart.php" class="icon">
+                        <i class="bx bx-cart"></i>
+                        <span class="d-flex"><?php $cart_num_result = mysqli_query($conn, "select count(*) as count from cart");
+                                                $cart_num = mysqli_fetch_assoc($cart_num_result);
+                                                echo $cart_num['count']; ?></span>
+                    </a>
+                </div>
+
+
+
+                <?php
+                if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) {
+                    echo '<a href="logout.php" class="icon">
+                        <i class="bx bx-log-out"></i> </a>';
+                } else {
+                    echo ' ';
+                }
+                ?>
+
+            </div>
 
       <div class="bgc">
         <div class="container9">
@@ -100,16 +130,12 @@
               </p>
               <div class="expert-wrapper">
                 <div class="expert">
-                  <img src="./images/Saurabh.jpg" />
-                  <p>Saurabh Tripathi</p>
+                  <img src="./images/" />
+                  <p>Nguyen Hoang Trung Chanh</p>
                 </div>
                 <div class="expert">
-                  <img src="./images/Tanisha.jpg" />
-                  <p>Tanisha Bhadani</p>
-                </div>
-                <div class="expert">
-                  <img src="./images/Rahul.jpeg" />
-                  <p>Rahul Verma</p>
+                  <img src="./images/" />
+                  <p>Nguyen Tuan Kiet</p>
                 </div>
 
 

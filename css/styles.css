@@ -810,7 +810,7 @@ Hero Media Query
   border: none;
 }
 
-.contact form a {
+.contact form .b-send {
   position: absolute;
   top: 0;
   right: 0;
@@ -819,6 +819,7 @@ Hero Media Query
   margin: 0.5rem;
   padding: 1rem 3rem;
   border-radius: 1rem;
+  border: none;
 }
 
 @media only screen and (max-width: 996px) {
@@ -1159,15 +1160,31 @@ form span {
 }
 
 /* Pagination */
+
+
 .pagination {
   display: flex;
   align-items: center;
   padding: 3rem 0 5rem 0;
 }
+.pagination .container {
+  text-align: center;
+}
 
-.pagination .see-more {
+.pagination a {
+  display: inline-block;
+  padding: 1rem 1.5rem;
+  border: 1px solid #0A59CC;
+  font-size: 1.8rem;
+  margin-bottom: 2rem;
+  cursor: pointer;
+  transition: all 300ms ease-in-out;
+}
+
+.pagination a:hover {
+  border: 1px solid #0A59CC;
   background-color: #0A59CC;
-  color: white ;
+  color: #fff;
 }
 
 /* Cart Items */

@@ -44,7 +44,7 @@ if (isset($_POST['add_to_cart'])) {
     <!-- Header -->
     <header class="header" id="header">
         <!-- Top Nav -->
-        <!-- <div class="top-nav">
+        <div class="top-nav">
             <div class="container d-flex">
                 <p>Order Online Or Call Us:(+91) 8081886430,7376550891</p>
                 <ul class="d-flex">
@@ -53,7 +53,7 @@ if (isset($_POST['add_to_cart'])) {
                     <li><a href="contact.html">Contact</a></li>
                 </ul>
             </div>
-        </div> -->
+        </div>
         <div class="navigation">
             <div class="nav-center container d-flex">
                 <a href="index.php" class="logo">
@@ -389,10 +389,10 @@ if (isset($_POST['add_to_cart'])) {
                 <a href="contact.html" class="btn btn-1">Contact</a>
             </div>
             <div class="col">
-                <form action="">
+                <form action="contactEmail.php" method="post">
                     <div>
-                        <input type="email" placeholder="Email Address">
-                        <a href="">Send</a>
+                        <input type="email" placeholder="Email Address" name="email">
+                        <button type="submit" class="b-send">Send</button>
                     </div>
                 </form>
             </div>
@@ -435,7 +435,7 @@ if (isset($_POST['add_to_cart'])) {
             </div>
             <div class="popup-left">
                 <div class="popup-img-container">
-                    <img class="popup-img" src="./images/popup.jpg" alt="popup">
+                    <img class="popup-img" src="./images/mj23.png" alt="popup">
                 </div>
             </div>
             <div class="popup-right">
@@ -443,9 +443,9 @@ if (isset($_POST['add_to_cart'])) {
                     <h1>Get Discount <span>50%</span> Off</h1>
                     <p>Sign up to our newsletter and save 30% for you next purchase. No spam, we promise!
                     </p>
-                    <form action="#">
-                        <input type="email" placeholder="Enter your email..." class="popup-form">
-                        <a href="#">Subscribe</a>
+                    <form action="subscribe.php" method="POST">
+                        <input type="email" placeholder="Enter your email..." class="popup-form" name="email">
+                        <button type="submit" class="btn btn-1">Subscribe</button>
                     </form>
                 </div>
             </div>

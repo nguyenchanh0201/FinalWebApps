@@ -17,6 +17,23 @@ if (isset($_POST['add_to_cart'])) {
   }
 
 }
+// Pagination
+$start = 0 ;
+$products_per_page = 4 ; 
+
+
+  //get total nb of products
+  $records = mysqli_query($conn,"Select * from products ");
+  $nb_of_rows = $records->num_rows;
+  $nb_of_pages = ceil($nb_of_rows/$products_per_page);
+  
+  if(isset($_GET['page-nr'])){
+    $page = $_GET['page-nr'];
+    $start = ($page - 1) * $products_per_page;
+  } else {
+    $page = 1;
+  }
+
 
 ?>
 
@@ -62,7 +79,7 @@ if (isset($_POST['add_to_cart'])) {
     </div>
     <div class="navigation">
       <div class="nav-center container d-flex">
-        <a href="index.html" class="logo">
+        <a href="index.php" class="logo">
           <h1>The Mart</h1>
         </a>
 
@@ -101,15 +118,17 @@ if (isset($_POST['add_to_cart'])) {
                                 <i class="bx bx-user"></i>
                             </a>
                         <?php } ?>
+          
 
-          <form action="/form/submit" method="GET">
-            <input type="text" name="text" class="search" placeholder="Search here!">
-            <input type="submit" name="submit" class="submit" value="Search" style="width: 70px;
+          <form action="search.php?manage=search" method="GET">
+            <input type="text" name="keyword" class="search" placeholder="Search here!">
+            <input type="submit" name="search" class="submit" value="Search" style="width: 70px;
                       background-color: #2579f2;
                       color: #ffffff;
                       border-radius: 8px;
                       box-shadow: 2px 2px 4px rgba(0, 0, 0, .4);">
           </form>
+          
           <a href="favorites.php" class="icon">
             <i class="bx bx-heart"></i>
             <span class="d-flex"><?php $fav_num_result = mysqli_query($conn, "select count(*) as count from favorites");
@@ -122,18 +141,35 @@ if (isset($_POST['add_to_cart'])) {
             $cart_num = mysqli_fetch_assoc($cart_num_result);
             echo $cart_num['count']; ?></span>
           </a>
-          <a href="logout.php" class="icon">
-            <i class="bx bx-log-out"></i>
-          </a>
+          <?php
+                if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) {
+                    echo '<a href="logout.php" class="icon">
+                        <i class="bx bx-log-out"></i> </a>';
+                } else {
+                    echo ' ';
+                }
+                ?>
         </div>
       </div>
       <!-- All Products -->
       <section class="section all-products" id="products">
         <div class="top container">
-          <h1>All Products</h1>
+          <?php
+          if (isset($_GET['search'])) {
+            $keyword = $_GET['keyword'];
+            // Sanitize the keyword
+            $keyword = mysqli_real_escape_string($conn, $keyword);
+            echo "Search Results for: $keyword";
+          }
+          else {
+            echo "<h1>All Products</h1>";
+          }
+          
+           ?>
+          
           <form>
             <select>
-              <option value="1">Defualt Sorting</option>
+              <option value="1">Default Sorting</option>
               <option value="2">Sort By Price</option>
               <option value="3">Sort By Popularity</option>
               <option value="4">Sort By Sale</option>
@@ -143,9 +179,23 @@ if (isset($_POST['add_to_cart'])) {
           </form>
         </div>
         
+        
         <div class="product-center container">
+          
         <?php
-            $select_query = mysqli_query($conn, "SELECT * FROM products");
+        
+          // } else {
+
+            $select_query = mysqli_query($conn, "SELECT * FROM products limit $start, $products_per_page");
+            if (isset($_GET['search'])) {
+              $keyword = $_GET['keyword'];
+              // Sanitize the keyword
+              $keyword = mysqli_real_escape_string($conn, $keyword);
+          
+              // Modify the SQL query to get products related to the keyword
+              $select_query = mysqli_query($conn,"SELECT * FROM products WHERE name LIKE '%$keyword%' OR category LIKE '%$keyword%'");
+              
+          } 
             if(mysqli_num_rows($select_query)>0) {
                 while($fetch_product = mysqli_fetch_assoc($select_query)){
                   ?>
@@ -162,7 +212,7 @@ if (isset($_POST['add_to_cart'])) {
             <span><?php echo $fetch_product['category'] ?></span>
             <form action="" method="post" class="form-submit">
               <a href="productDetails.html"><?php echo $fetch_product['name'] ?></a>
-              <h4><?php echo $fetch_product['price'] ?></h4>
+              <h4>$<?php echo $fetch_product['price'] ?></h4>
 
               <input type="hidden" name="product_name" value="<?php echo $fetch_product['name'] ?>">
               <input type="hidden" name="product_price" value="<?php echo $fetch_product['price'] ?>">
@@ -197,22 +247,66 @@ if (isset($_POST['add_to_cart'])) {
           
           </div>
           <?php
+
             } 
             } else {
                 echo "<div class='alert alert-danger'>No product found</div>";
             }
-              ?>
           
+          // }
+              ?>
+      
 
           
       </div>
       </section>
+      
       <section class="pagination">
-        <div class="container">
-          <!-- button right here -->
-          <span class="see-more-btn">See more</span>
-        </div>
-      </section>
+      <div class="container">
+      <h4>Showing <?php echo $page ; ?> out of <?php echo $nb_of_pages ?></h4> <br>
+
+      <?php
+      if(isset($_GET['page-nr']) && $_GET['page-nr'] > 1) {
+      ?>
+      <a href="?page-nr=<?php echo $_GET['page-nr'] - 1 ?>"><i class="bx bx-left-arrow-alt"></i></a>
+      <?php
+      } else {
+        ?>
+        <a href=""><i class="bx bx-left-arrow-alt"></i></a>
+        <?php
+      }
+      ?>
+
+      
+
+      
+        <a href="?page-nr=1">1</a>
+        <a href="?page-nr=2">2</a>
+        <a href="?page-nr=3">3</a> 
+        <a href="?page-nr=4">4</a>
+        <?php
+      if(!isset($_GET['page-nr'])) {
+
+      ?>
+      <a href="?page-nr=2"><i class="bx bx-right-arrow-alt"></i></a>
+      <?php
+      } else {
+        if($_GET['page-nr'] >= $nb_of_pages) {
+
+        ?>
+        <a href=""><i class="bx bx-right-arrow-alt"></i></a>
+        <?php
+        } else {
+          ?>
+          <a href="?page-nr=<?php echo $_GET['page-nr'] + 1 ?>"><i class="bx bx-right-arrow-alt"></i></a>
+          <?php
+        }
+
+          
+        }
+        ?>
+      </div>
+    </section>
       <!-- Footer -->
       <footer class="footer">
         <div class="row">
