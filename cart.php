@@ -1,13 +1,16 @@
 <?php
 include 'config.php';
+session_start();
 
 //update query 
 if (isset($_POST['update_product_quantity'])) {
   $update_value = $_POST['update_quantity'];
+  
   //echo $update_value;
   $update_id = $_POST['update_quantity_id'];
   //echo $update_id;
   $update_quantity_query = mysqli_query($conn, "UPDATE cart SET quantity = '$update_value' WHERE id = '$update_id'");
+  
   if ($update_quantity_query) {
     echo "Quantity updated successfully";
     header("location:cart.php");
@@ -21,7 +24,7 @@ if (isset($_POST['add_to_cart'])) {
   $product_name = $_POST['product_name'];
   $product_price = $_POST['product_price'];
   $product_image = $_POST['product_image'];
-  $product_quantity = 1 ; 
+  $product_quantity = 1;
 
   $insert_product = mysqli_query($conn, "INSERT INTO cart (name, price, image, quantity) VALUES ('$product_name', '$product_price', '$product_image', $product_quantity)");
 }
@@ -32,7 +35,6 @@ if (isset($_POST['add_to_favorites'])) {
   $product_image = $_POST['product_image'];
 
   $insert_product = mysqli_query($conn, "INSERT INTO favorites (name, price, image) VALUES ('$product_name', '$product_price', '$product_image')");
-  
 }
 
 
@@ -93,29 +95,54 @@ if (isset($_POST['add_to_favorites'])) {
         </li>
       </ul>
 
-      <div class="icons d-flex">
-        <a href="login.html" class="icon">
-          <i class="bx bx-user"></i>
-        </a>
-        <a href="search.html" class="icon">
-          <i class="bx bx-search"></i>
-        </a>
-        <div class="icon">
-          <i class="bx bx-heart"></i>
-          <span class="d-flex">0</span>
-        </div>
-        <a href="cart.html" class="icon">
-          <i class="bx bx-cart"></i>
-          <span class="d-flex">0</span>
-        </a>
-        <a href="logout.php" class="icon">
-          <i class="bx bx-log-out"></i>
-        </a>
-      </div>
+      <?php if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) { ?>
+                        <li class="nav-item">
+                            <a href="profile.php" class="nav-link">
+                                <?php echo $_SESSION['username']; ?>
+                            </a>
+                        </li>
+                    <?php } ?>
+                </ul>
 
-      <div class="hamburger">
-        <i class="bx bx-menu-alt-left"></i>
-      </div>
+                <div class="icons d-flex">
+                    <?php if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) { ?>
+
+                    <?php } else { ?>
+                        <a href="login.html" class="icon">
+                            <i class="bx bx-user"></i>
+                        </a>
+                    <?php } ?>
+                    <a href="search.php" class="icon">
+                        <i class="bx bx-search"></i>
+                    </a>
+                    <a href="favorites.php" class="icon">
+                        <i class="bx bx-heart"></i>
+                        <span class="d-flex"><?php $fav_num_result = mysqli_query($conn, "select count(*) as count from favorites");
+                                                $fav_num = mysqli_fetch_assoc($fav_num_result);
+                                                echo $fav_num['count']; ?></span>
+                    </a>
+                    <a href="cart.php" class="icon">
+                        <i class="bx bx-cart"></i>
+                        <span class="d-flex"><?php $cart_num_result = mysqli_query($conn, "select count(*) as count from cart");
+                                                $cart_num = mysqli_fetch_assoc($cart_num_result);
+                                                echo $cart_num['count']; ?></span>
+                    </a>
+                </div>
+
+
+
+                <?php
+                if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) {
+                    echo '<a href="logout.php" class="icon">
+                        <i class="bx bx-log-out"></i> </a>';
+                } else {
+                    echo ' ';
+                }
+                ?>
+
+            </div>
+
+      
     </div>
   </div>
 
@@ -131,38 +158,39 @@ if (isset($_POST['add_to_favorites'])) {
           <th>Subtotal</th>
         </tr>
         <tr>";
-      
-      while ($fetch_cart_products = mysqli_fetch_assoc($select_cart_products)) {
+
+        while ($fetch_cart_products = mysqli_fetch_assoc($select_cart_products)) {
 
       ?>
 
-        <td>
-          <div class="cart-info">
-            <img src="<?php echo $fetch_cart_products['image'] ?>" alt="" />
-            <div>
-              <p><?php echo $fetch_cart_products['name'] ?></p>
-              <span>Price: $<?php echo $fetch_cart_products['price'] ?></span> <br>
-              <a href="delete.php?delete_cart= <?php echo $fetch_cart_products['id']?>" onclick="return confirm('Are you sure you want to delete ?');">remove</a>
+          <td>
+            <div class="cart-info">
+              <img src="<?php echo $fetch_cart_products['image'] ?>" alt="" />
+              <div>
+                <p><?php echo $fetch_cart_products['name'] ?></p>
+                <span>Price: $<?php echo $fetch_cart_products['price'] ?></span> <br>
+                <a href="delete.php?delete_cart= <?php echo $fetch_cart_products['id'] ?>" onclick="return confirm('Are you sure you want to delete ?');">remove</a>
+              </div>
             </div>
-          </div>
-        </td>
-        <td>
-          <form action="" method="post">
-            <input type="hidden" value="<?php echo $fetch_cart_products['id'] ?>" name="update_quantity_id">
-            <input type="number" min="1" value="<?php echo $fetch_cart_products['quantity'] ?>" name="update_quantity">
-            <button type="submit" name="update_product_quantity" style="
+          </td>
+          <td>
+            <form action="" method="post">
+              <input type="hidden" value="<?php echo $fetch_cart_products['id'] ?>" name="update_quantity_id">
+              <input type="number" min="1" value="<?php echo $fetch_cart_products['quantity'] ?>" name="update_quantity">
+              <button type="submit" name="update_product_quantity" style="
           color: white;  
           background-color: #0A59CC;
           border: none;
           padding: 5px 8px;
           cursor: pointer;" value="update">
-              Update</button>
-        </form></td>
-        <td>$<?php $subtotal = $fetch_cart_products['quantity'] * $fetch_cart_products['price'];
-        echo $subtotal; ?></td>
-        </tr>
+                Update</button>
+            </form>
+          </td>
+          <td>$<?php $subtotal = $fetch_cart_products['quantity'] * $fetch_cart_products['price'];
+                echo $subtotal; ?></td>
+          </tr>
       <?php
-      }
+        }
       } else {
         echo "<div class='alert alert-danger'>No product found</div>";
       }
@@ -189,10 +217,10 @@ if (isset($_POST['add_to_favorites'])) {
         <tr>
           <td>Total</td>
           <td>$<?php $total -= 50;
-          if ($total < 0) {
-            $total = 0;
-          }
-              echo $total;  ?></td>
+                if ($total < 0) {
+                  $total = 0;
+                }
+                echo $total;  ?></td>
         </tr>
       </table>
       <a href="checkout.html" class="checkout btn">Proceed To Checkout</a>
@@ -228,9 +256,9 @@ if (isset($_POST['add_to_favorites'])) {
                 <a href="productDetails.html"><?php echo $fetch_product['name'] ?></a>
                 <h4><?php echo $fetch_product['price'] ?></h4>
 
-              <input type="hidden" name="product_name" value="<?php echo $fetch_product['name'] ?>">
-              <input type="hidden" name="product_price" value="<?php echo $fetch_product['price'] ?>">
-              <input type="hidden" name="product_image" value="<?php echo $fetch_product['image'] ?>">
+                <input type="hidden" name="product_name" value="<?php echo $fetch_product['name'] ?>">
+                <input type="hidden" name="product_price" value="<?php echo $fetch_product['price'] ?>">
+                <input type="hidden" name="product_image" value="<?php echo $fetch_product['image'] ?>">
 
             </div>
             <ul class="icons">
@@ -238,7 +266,7 @@ if (isset($_POST['add_to_favorites'])) {
 
                 <button type="submit" class="btn btn-link" name="add_to_favorites">
                   <i class="bx bx-heart"></i>
-                  
+
                 </button>
 
               </li>
@@ -256,7 +284,7 @@ if (isset($_POST['add_to_favorites'])) {
                 </button>
 
               </li>
-            </form>
+              </form>
             </ul>
             </form>
 
