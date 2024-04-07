@@ -849,6 +849,7 @@ Hero Media Query
 .footer {
   padding: 7rem 1rem;
   background-color: #0A59CC;
+  
 }
 
 footer .row {
@@ -1355,6 +1356,7 @@ th:last-child {
   padding: 0.8rem 4rem;
   color: #fff;
   border-radius: 3rem;
+  cursor: pointer;
 }
 
 .product-detail h3 {

@@ -9,8 +9,30 @@ if (isset($_POST['add_to_cart'])) {
     $product_price = $_POST['product_price'];
     $product_image = $_POST['product_image'];
     $product_quantity = 1;
+    $product_id = $_POST['id'];
+    $stmt = $conn->prepare("SELECT * FROM cart WHERE name = ?");
+    $stmt->bind_param("s", $product_name);
+    $stmt->execute();
+    $select_cart = $stmt->get_result();
+    if (mysqli_num_rows($select_cart) > 0) {
+      $fetch_cart = mysqli_fetch_assoc($select_cart);
+      $product_quantity = $fetch_cart['quantity'] + 1;
+      $update_cart = mysqli_query($conn, "UPDATE cart SET quantity = $product_quantity WHERE name = '$product_name'");
+    } else {
+      $user_id = $_SESSION['id']; // Assuming you have user_id in session after user login
+    $insert_product = mysqli_query($conn, "INSERT INTO cart (name, price, image, quantity, id_product, id_user) VALUES ('$product_name', '$product_price', '$product_image', $product_quantity, $product_id, $user_id)");
+    }
+  }
 
-    $insert_product = mysqli_query($conn, "INSERT INTO cart (name, price, image, quantity) VALUES ('$product_name', '$product_price', '$product_image', $product_quantity)");
+//add to favorites
+if (isset($_POST['add_to_favorites'])) {
+    $product_name = $_POST['product_name'];
+    $product_price = $_POST['product_price'];
+    $product_image = $_POST['product_image'];
+    $product_id = $_POST['id'];
+    $product_category = $_POST['category'];
+    $user_id = $_SESSION['id']; // Assuming you have user_id in session after user login
+    $insert_favorites = mysqli_query($conn, "INSERT INTO favorites (name, price, image, id_product, id_user, category) VALUES ('$product_name', '$product_price', '$product_image', $product_id, $user_id, '$product_category')");
 }
 
 ?>
@@ -80,7 +102,7 @@ if (isset($_POST['add_to_cart'])) {
 
                     <?php if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) { ?>
                         <li class="nav-item">
-                            <a href="profile.php" class="nav-link">
+                            <a href="track_order.php" class="nav-link">
                                 <?php echo $_SESSION['username']; ?>
                             </a>
                         </li>
@@ -134,10 +156,10 @@ if (isset($_POST['add_to_cart'])) {
                             <li class="glide__slide">
                                 <div class="center">
                                     <div class="left">
-                                    <span>New Inspiration 2022</span>
+                                    <span>New Inspiration 2024</span>
                                         <h1>THE PERFECT MATCH!</h1>
-                                        <p>Trending from men's and women's style collection</p>
-                                        <a href="product.html" class="hero-btn">SHOP NOW</a>
+                                        <p>Brand new basketball shoes collection with many choices</p>
+                                        <a href="search.php" class="hero-btn">SHOP NOW</a>
                                     </div>
                                     <div class="right">
                                         <img class="img1" src="./images/kb24.png" alt="">
@@ -147,10 +169,10 @@ if (isset($_POST['add_to_cart'])) {
                             <li class="glide__slide">
                                 <div class="center">
                                     <div class="left">
-                                        <span>New Inspiration 2022</span>
-                                        <h1>THE PERFECT MATCH!</h1>
-                                        <p>Trending from men's and women's style collection</p>
-                                        <a href="product.html" class="hero-btn">SHOP NOW</a>
+                                        <span>New Nike Basketball shoes coming out</span>
+                                        <h1>BE LIKE POOLE!</h1>
+                                        <p>Try out these GT CUT 3 to be shifty and "Poole" party!!!</p>
+                                        <a href="search.php" class="hero-btn">SHOP NOW</a>
                                     </div>
                                     <div class="right">
                                         <img class="img2" src="./images/jp3.png" alt="">
@@ -160,10 +182,10 @@ if (isset($_POST['add_to_cart'])) {
                             <li class="glide__slide">
                                 <div class="center">
                                     <div class="left">
-                                        <span>New Inspiration 2022</span>
-                                        <h1>THE PERFECT MATCH!</h1>
-                                        <p>Trending from men's and women's style collection</p>
-                                        <a href="product.html" class="hero-btn">SHOP NOW</a>
+                                        <span>Vince Carter Back to Back shoes collection</span>
+                                        <h1>THE DUNK OF THE YEAR</h1>
+                                        <p>Pick a pair of Vince's best shoes to recreate the iconic dunk of all time!!!</p>
+                                        <a href="search.php" class="hero-btn">SHOP NOW</a>
                                     </div>
                                     <div class="right">
                                         <img class="img1" src="./images/carter.png" alt="">
@@ -185,7 +207,7 @@ if (isset($_POST['add_to_cart'])) {
     <section class="section category">
         <div class="cat-center">
             <div class="cat">
-                <a href="search.php/nike-basketball">
+                <a href="search.php?keyword=Nike Basketball&search=Search">
                 <img src="./images/nike.png" alt="" />
                 <div>
                     <p>NIKE</p>
@@ -194,18 +216,21 @@ if (isset($_POST['add_to_cart'])) {
                 
             </div>
             <div class="cat">
+            <a href="search.php?keyword=Adidas Basketball&search=Search">
                 <img src="./images/adidas.png" alt="" />
                 <div>
                     <p>ADIDAS</p>
                 </div>
             </div>
             <div class="cat">
+            <a href="search.php?keyword=Puma Basketball&search=Search">
                 <img src="./images/puma.png" alt="" />
                 <div>
                     <p>PUMA</p>
                 </div>
             </div>
             <div class="cat">
+            <a href="search.php?keyword=New Balance Basketball&search=Search">
                 <img src="./images/nb.png" alt="" />
                 <div>
                     <p>NEW BALANCE</p>
@@ -224,13 +249,13 @@ if (isset($_POST['add_to_cart'])) {
 
         <div class="product-center container">
             <?php
-            $select_query = mysqli_query($conn, "SELECT * FROM products");
+            $select_query = mysqli_query($conn, "SELECT * FROM products limit 0,8");
             if (mysqli_num_rows($select_query) > 0) {
                 while ($fetch_product = mysqli_fetch_assoc($select_query)) {
             ?>
                     <div class="product-item">
                         <div class="overlay">
-                            <a href="productDetails.html" class="product-thumb">
+                            <a href="productDetails.php?product_name=<?php echo urlencode($fetch_product['name']); ?>" class="product-thumb">
                                 <img src="<?php echo $fetch_product['image'] ?>" alt="" />
                             </a>
                             <span class="discount">40%</span>
@@ -240,12 +265,14 @@ if (isset($_POST['add_to_cart'])) {
 
                             <span><?php echo $fetch_product['category'] ?></span>
                             <form action="" method="post" class="form-submit">
-                                <a href="productDetails.html"><?php echo $fetch_product['name'] ?></a>
+                                <a href="productDetails.php?product_name=<?php echo urlencode($fetch_product['name']); ?>"><?php echo $fetch_product['name'] ?></a>
                                 <h4>$<?php echo $fetch_product['price'] ?></h4>
 
                                 <input type="hidden" name="product_name" value="<?php echo $fetch_product['name'] ?>">
-                                <input type="hidden" name="product_price" value="<?php echo $fetch_product['price'] ?>">
-                                <input type="hidden" name="product_image" value="<?php echo $fetch_product['image'] ?>">
+                    <input type="hidden" name="id" value="<?php echo $fetch_product['idProduct'] ?>">
+                    <input type="hidden" name="product_price" value="<?php echo $fetch_product['price'] ?>">
+                    <input type="hidden" name="product_image" value="<?php echo $fetch_product['image'] ?>">
+                    <input type="hidden" name="category" value="<?php echo $fetch_product['category'] ?>">            
 
                         </div>
                         <ul class="icons">
@@ -258,9 +285,9 @@ if (isset($_POST['add_to_cart'])) {
                             </li>
                             <li>
 
-                                <button type="submit" class="btn btn-link">
+                                <a href="search.php?keyword=<?php echo $fetch_product['name'] ; ?>&search=Search" class="btn btn-link">
                                     <i class="bx bx-search"></i>
-                                </button>
+                                </a>
 
                             </li>
                             <li>
@@ -292,10 +319,10 @@ if (isset($_POST['add_to_cart'])) {
 
     <section class="section banner">
         <div class="left">
-            <span class="trend">Trend Design</span>
-            <h1>New Collection 2022</h1>
-            <p>New Arrival <span class="color">Sale 50% OFF</span> Limited Time Offer</p>
-            <a href="product.html" class="btn btn-1">Discover Now</a>
+            <span class="trend">Choices from one of the greatest shooter of all time - Ray Allen</span>
+            <h1>New Collection 2024</h1>
+            <p>New Arrival <span class="color">Sale 40% OFF</span> Limited Time Offer</p>
+            <a href="search.php" class="btn btn-1">Discover Now</a>
         </div>
         <div class="right">
             <img src="./images/allen.png" alt="">
@@ -315,7 +342,7 @@ if (isset($_POST['add_to_cart'])) {
 
         <div class="product-center container">
             <?php
-            $select_query = mysqli_query($conn, "SELECT * FROM products");
+            $select_query = mysqli_query($conn, "SELECT * FROM products order by rand() limit 0,8");
             if (mysqli_num_rows($select_query) > 0) {
                 while ($fetch_product = mysqli_fetch_assoc($select_query)) {
             ?>
@@ -335,8 +362,9 @@ if (isset($_POST['add_to_cart'])) {
                                 <h4>$<?php echo $fetch_product['price'] ?></h4>
 
                                 <input type="hidden" name="product_name" value="<?php echo $fetch_product['name'] ?>">
-                                <input type="hidden" name="product_price" value="<?php echo $fetch_product['price'] ?>">
-                                <input type="hidden" name="product_image" value="<?php echo $fetch_product['image'] ?>">
+                    <input type="hidden" name="id" value="<?php echo $fetch_product['idProduct'] ?>">
+                    <input type="hidden" name="product_price" value="<?php echo $fetch_product['price'] ?>">
+                    <input type="hidden" name="product_image" value="<?php echo $fetch_product['image'] ?>">
 
                         </div>
                         <ul class="icons">
@@ -372,11 +400,96 @@ if (isset($_POST['add_to_cart'])) {
                 echo "<div class='alert alert-danger'>No product found</div>";
             }
             ?>
-
+        
 
 
         </div>
 
+    </section>
+
+    <section class="section banner">
+        <div class="left">
+            <span class="trend">Shoot like the Chef in those pair of shoes - Stephen Curry</span>
+            <h1>Recreate his Clutch shots</h1>
+            <p>New Arrival <span class="color">Sale 50% OFF</span> Limited Time Offer</p>
+            <a href="search.php" class="btn btn-1">Discover Now</a>
+        </div>
+        <div class="right">
+            <img src="./images/curry.png" alt="">
+        </div>
+    </section>
+
+
+    <section class="section new-arrival">
+        <div class="title">
+            <h1>Featured</h1>
+            <p>All the latest picked from designer of our store</p>
+        </div>
+
+        <div class="product-center container">
+            <?php
+            $select_query = mysqli_query($conn, "SELECT * FROM products order by rand() limit 0,8");
+            if (mysqli_num_rows($select_query) > 0) {
+                while ($fetch_product = mysqli_fetch_assoc($select_query)) {
+            ?>
+                    <div class="product-item">
+                        <div class="overlay">
+                            <a href="productDetails.html" class="product-thumb">
+                                <img src="<?php echo $fetch_product['image'] ?>" alt="" />
+                            </a>
+                            <span class="discount">40%</span>
+                        </div>
+                        <div class="product-info">
+
+
+                            <span><?php echo $fetch_product['category'] ?></span>
+                            <form action="" method="post" class="form-submit">
+                                <a href="productDetails.html"><?php echo $fetch_product['name'] ?></a>
+                                <h4>$<?php echo $fetch_product['price'] ?></h4>
+
+                                <input type="hidden" name="product_name" value="<?php echo $fetch_product['name'] ?>">
+                    <input type="hidden" name="id" value="<?php echo $fetch_product['idProduct'] ?>">
+                    <input type="hidden" name="product_price" value="<?php echo $fetch_product['price'] ?>">
+                    <input type="hidden" name="product_image" value="<?php echo $fetch_product['image'] ?>">
+
+                        </div>
+                        <ul class="icons">
+                            <li>
+
+                                <button type="submit" class="btn btn-link">
+                                    <i class="bx bx-heart"></i>
+                                </button>
+
+                            </li>
+                            <li>
+
+                                <button type="submit" class="btn btn-link">
+                                    <i class="bx bx-search"></i>
+                                </button>
+
+                            </li>
+                            <li>
+
+                                <button type="submit" class="btn btn-link" name="add_to_cart">
+                                    <i class="bx bx-cart"></i>
+                                </button>
+
+                            </li>
+                        </ul>
+                        </form>
+
+
+                    </div>
+            <?php
+                }
+            } else {
+                echo "<div class='alert alert-danger'>No product found</div>";
+            }
+            ?>
+        
+
+
+        </div>
     </section>
 
     <!-- Contact -->
@@ -398,6 +511,7 @@ if (isset($_POST['add_to_cart'])) {
             </div>
         </div>
     </section>
+    
 
     <!-- Footer -->
     <footer class="footer">
