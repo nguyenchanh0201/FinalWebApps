@@ -167,7 +167,7 @@ if (isset($_POST['add_to_favorites'])) {
             <div class="cart-info">
               <img src="<?php echo $fetch_cart_products['image'] ?>" alt="" />
               <div>
-                <p><?php echo $fetch_cart_products['name'] ?></p>
+                <a style="color: #0A59CC;" href="productDetails.php?product_name=<?php echo urlencode($fetch_cart_products['name']); ?>"><?php echo $fetch_cart_products['name'] ?></a> <br>
                 <span>Price: $<?php echo $fetch_cart_products['price'] ?></span> <br>
                 <a href="delete.php?delete_cart= <?php echo $fetch_cart_products['id'] ?>" onclick="return confirm('Are you sure you want to delete ?');">remove</a>
               </div>
@@ -223,8 +223,16 @@ if (isset($_POST['add_to_favorites'])) {
                 echo $total;  ?></td>
         </tr>
       </table>
-      <a href="checkout.html" class="checkout btn">Proceed To Checkout</a>
-      <a href="search.php" class="checkout btn" style="width: 117px; text-align:center;">Continue Shopping</a>
+      <?php
+      //Check logged in
+      if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) {
+        echo '<a href="checkout.php" class="checkout btn">Proceed To Checkout</a>';
+        echo '<a href="search.php" class="checkout btn" style="width: 117px; text-align:center;">Continue Shopping</a>';
+      }
+      else {
+        echo '<a href="login.html" class="checkout btn">Login To Checkout</a>';
+      }
+       ?>
     </div>
 
   </div>

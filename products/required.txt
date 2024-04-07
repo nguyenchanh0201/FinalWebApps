@@ -1,9 +1,0 @@
-Vẽ thêm trang giao diện cho Admin 
-Add to Cart cho từng trang product
-Sửa lại giao diện cho các chức năng Admin
-Thêm csdl cho size của giày
-Kiểu thêm chức năng disable 1 size giày nào đó tùy thuộc vào số size hiện có của đôi giày đó 
-Thêm trang favourites
-Thêm trang profile để chỉnh sửa profile
-
-Deadline for this : trước t7 6/4/2024

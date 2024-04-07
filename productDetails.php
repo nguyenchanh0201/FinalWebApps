@@ -1,7 +1,26 @@
 <?php
-include '../config.php';
+include 'config.php';
 
 session_start();
+if (isset($_POST['add_to_cart'])) {
+  $product_name = $_POST['product_name'];
+  $product_price = $_POST['product_price'];
+  $product_image = $_POST['product_image'];
+  $product_quantity = 1;
+  $product_id = $_POST['id'];
+  $stmt = $conn->prepare("SELECT * FROM cart WHERE name = ?");
+  $stmt->bind_param("s", $product_name);
+  $stmt->execute();
+  $select_cart = $stmt->get_result();
+  if (mysqli_num_rows($select_cart) > 0) {
+    $fetch_cart = mysqli_fetch_assoc($select_cart);
+    $product_quantity = $fetch_cart['quantity'] + 1;
+    $update_cart = mysqli_query($conn, "UPDATE cart SET quantity = $product_quantity WHERE name = '$product_name'");
+  } else {
+    $user_id = $_SESSION['id']; // Assuming you have user_id in session after user login
+  $insert_product = mysqli_query($conn, "INSERT INTO cart (name, price, image, quantity, id_product, id_user) VALUES ('$product_name', '$product_price', '$product_image', $product_quantity, $product_id, $user_id)");
+  }
+}
 
 ?>
 
@@ -22,7 +41,7 @@ session_start();
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
     <!-- Custom StyleSheet -->
-    <link rel="stylesheet" href="../css/styles.css" />
+    <link rel="stylesheet" href="./css/styles.css" />
     <title>Boy’s T-Shirt - Codevo</title>
   </head>
 
@@ -62,58 +81,64 @@ session_start();
                     </li>
                     
                     
-                    <li class="nav-item">
-                        <a href="#" class="nav-link">
-                            <?php 
-                                if(isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) {
-                                    echo $_SESSION['username'];
-                                }
-                                else {
-                                    echo "";
-                                }
-                                  ?>
-                        </a>
-                    </li>
-                   
+                    <?php if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) { ?>
+                        <li class="nav-item">
+                            <a href="profile.php" class="nav-link">
+                                <?php echo $_SESSION['username']; ?>
+                            </a>
+                        </li>
+                    <?php } ?>
                 </ul>
 
                 <div class="icons d-flex">
-                    <a href="login.html" class="icon">
-                        <i class="bx bx-user"></i>
-                    </a>
-                    <a href="search.html" class="icon">
+                    <?php if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) { ?>
+
+                    <?php } else { ?>
+                        <a href="login.html" class="icon">
+                            <i class="bx bx-user"></i>
+                        </a>
+                    <?php } ?>
+                    <a href="search.php" class="icon">
                         <i class="bx bx-search"></i>
                     </a>
-                    <div class="icon">
+                    <a href="favorites.php" class="icon">
                         <i class="bx bx-heart"></i>
-                        <span class="d-flex">0</span>
-                    </div>
-                    <a href="cart.html" class="icon">
-                        <i class="bx bx-cart"></i>
-                        <span class="d-flex">0</span>
+                        <span class="d-flex"><?php $fav_num_result = mysqli_query($conn, "select count(*) as count from favorites");
+                                                $fav_num = mysqli_fetch_assoc($fav_num_result);
+                                                echo $fav_num['count']; ?></span>
                     </a>
-                    <?php
-                    if(isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) {
-                        echo '<a href="../logout.php" class="icon">
-                        <i class="bx bx-log-out"></i> </a>';
-                    }
-                    else {
-                        echo ' ';
-                    }
-                    ?>
-                    
+                    <a href="cart.php" class="icon">
+                        <i class="bx bx-cart"></i>
+                        <span class="d-flex"><?php $cart_num_result = mysqli_query($conn, "select count(*) as count from cart");
+                                                $cart_num = mysqli_fetch_assoc($cart_num_result);
+                                                echo $cart_num['count']; ?></span>
+                    </a>
                 </div>
 
-                <div class="hamburger">
-                    <i class="bx bx-menu-alt-left"></i>
-                </div>
+
+
+                <?php
+                if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) {
+                    echo '<a href="logout.php" class="icon">
+                        <i class="bx bx-log-out"></i> </a>';
+                } else {
+                    echo ' ';
+                }
+                ?>
+
+            </div>
+
+                
             </div>
         </div>
 
     <!-- Product Details -->
     <?php
-            $productId = 12; // Set the product ID you want to fetch
-            $select_query = mysqli_query($conn, "SELECT * FROM products WHERE idProduct = $productId");
+            $product_name = $_GET['product_name'];
+
+            // Sanitize the product name
+            $product_name = mysqli_real_escape_string($conn, $product_name);
+            $select_query = mysqli_query($conn, "SELECT * FROM products WHERE name = '$product_name'");
             $product = mysqli_fetch_assoc($select_query);
             
           ?>
@@ -122,7 +147,7 @@ session_start();
         <div class="left image-container">
           <div class="main">
 
-            <img src="../<?php echo $product['image']; ?>" id="zoom" alt="">
+            <img src="<?php echo $product['image']; ?>" id="zoom" alt="">
           </div>
         </div>
 
@@ -141,9 +166,14 @@ session_start();
               <option value="4">62</option>
             </select>
           </form>
-          <form class="form">
-            <input type="text" placeholder="1" />
-            <a href="cart.html" class="addCart" >Add To Cart</a>
+          <form class="form" method="post">
+                    <input type="hidden" name="product_name" value="<?php echo $product['name'] ?>">
+                <input type="hidden" name="id" value="<?php echo $product['idProduct'] ?>">
+                <input type="hidden" name="product_price" value="<?php echo $product['price'] ?>">
+                <input type="hidden" name="product_image" value="<?php echo $product['image'] ?>">
+
+                
+            <button type="submit" class="addCart" name="add_to_cart">Add to Cart</button>
           </form>
           <h3>Product Detail</h3>
           <p>
@@ -157,18 +187,18 @@ session_start();
     <section class="section featured">
       <div class="top container">
         <h1>Related Products</h1>
-        <a href="#" class="view-more">View more</a>
+        <a href="search.php?keyword=<?php echo $product['category']; ?>&search=Search" class="view-more">View more</a>
       </div>
       <div class="product-center container">
         <?php
-            $select_query = mysqli_query($conn, "SELECT * FROM products");
+            $select_query = mysqli_query($conn, "SELECT * FROM products where category = '".$product['category']."' limit 0,4");
             if(mysqli_num_rows($select_query)>0) {
                 while($fetch_product = mysqli_fetch_assoc($select_query)){
                   ?>
           <div class="product-item">
             <div class="overlay">
               <a href="productDetails.html" class="product-thumb">
-                <img src="../<?php echo $fetch_product['image'] ?>" alt="" />
+                <img src="<?php echo $fetch_product['image'] ?>" alt="" />
               </a>
               <span class="discount">40%</span>
             </div>
@@ -179,10 +209,11 @@ session_start();
             <form action="" method="post" class="form-submit">
               <a href="productDetails.html"><?php echo $fetch_product['name'] ?></a>
               <h4>$<?php echo $fetch_product['price'] ?></h4>
-
-              <input type="hidden" name="product_name">
-              <input type="hidden" name="product_price">
-              <input type="hidden" name="product_image">
+                  
+              <input type="hidden" name="product_name" value="<?php echo $fetch_product['name'] ?>">
+                    <input type="hidden" name="id" value="<?php echo $fetch_product['idProduct'] ?>">
+                    <input type="hidden" name="product_price" value="<?php echo $fetch_product['price'] ?>">
+                    <input type="hidden" name="product_image" value="<?php echo $fetch_product['image'] ?>">
 
             </div>
             <ul class="icons">

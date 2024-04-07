@@ -2,7 +2,25 @@
 include 'config.php';
 session_start();
 
-
+if (isset($_POST['add_to_cart'])) {
+  $product_name = $_POST['product_name'];
+  $product_price = $_POST['product_price'];
+  $product_image = $_POST['product_image'];
+  $product_quantity = 1;
+  $product_id = $_POST['id'];
+  $stmt = $conn->prepare("SELECT * FROM cart WHERE name = ?");
+  $stmt->bind_param("s", $product_name);
+  $stmt->execute();
+  $select_cart = $stmt->get_result();
+  if (mysqli_num_rows($select_cart) > 0) {
+    $fetch_cart = mysqli_fetch_assoc($select_cart);
+    $product_quantity = $fetch_cart['quantity'] + 1;
+    $update_cart = mysqli_query($conn, "UPDATE cart SET quantity = $product_quantity WHERE name = '$product_name'");
+  } else {
+    $user_id = $_SESSION['id']; // Assuming you have user_id in session after user login
+  $insert_product = mysqli_query($conn, "INSERT INTO cart (name, price, image, quantity, id_product, id_user) VALUES ('$product_name', '$product_price', '$product_image', $product_quantity, $product_id, $user_id)");
+  }
+}
 
 
 ?>
@@ -32,7 +50,7 @@ session_start();
   <!-- Navigation -->
   <header class="header" id="header">
     <!-- Top Nav -->
-    <!-- <div class="top-nav">
+     <div class="top-nav">
             <div class="container d-flex">
                 <p>Order Online Or Call Us:(+91) 8081886430,7376550891</p>
                 <ul class="d-flex">
@@ -41,7 +59,7 @@ session_start();
                     <li><a href="contact.html">Contact</a></li>
                 </ul>
             </div>
-        </div> -->
+        </div> 
     <div class="navigation">
       <div class="nav-center container d-flex">
         <a href="index.php" class="logo">
@@ -120,64 +138,16 @@ session_start();
     </div>
 
     <!-- Cart Items -->
-    <div class="view-products-container">
-      <section class="display_product">
-        <h1 style="text-align: center; margin-top: 20px;">My Wish List</h1>
-        <table>
-          <thead>
-            <th>SL No</th>
-            <th>Product Image</th>
-            <th>Product name</th>
-            <th>Product Price</th>
-            <th>Action</th>
-          </thead>
-          <tbody>
-            <!-- php code -->
-            <?php
-            $display_product = mysqli_query($conn, "SELECT * FROM favorites");
-            $num = 1;
-            if (mysqli_num_rows($display_product) > 0) {
-              while ($row = mysqli_fetch_assoc($display_product)) {
-            ?>
-                <tr>
-                  <td><?php echo $num ?></td>
-                  <td><img src="<?php echo $row['image'] ?>" alt="<?php echo $row['name'] ?>"></td>
-                  <td><?php echo $row['name'] ?></td>
-                  <td>$<?php echo $row['price'] ?></td>
-                  <td>
-                    <a href="delete.php?delete_favorites= <?php echo $row['id'] ?>" class="delete-product-btn" onclick="return confirm('Are you sure you want to delete ?');">
-                      <i class="fas fa-trash"></i>
-                    </a>
-                  </td>
-                </tr>
-            <?php
-                $num++;
-              }
-            } else {
-              echo "
-                        <td> </td>
-                        <td> </td>
-                        <td>No products found</td>";
-            }
-            ?>
-          </tbody>
-        </table>
-
-    </div>
-
-    </div>
-
-    <!-- Latest Products -->
     <section class="section featured">
       <div class="top container">
-        <h1>Latest Products</h1>
-        <a href="#" class="view-more">View more</a>
+        <h1>Your Wish List</h1>
+        <a href="search.php" class="view-more">View more</a>
       </div>
       <div class="product-center container">
         <?php
-        $select_query = mysqli_query($conn, "SELECT * FROM products");
-        if (mysqli_num_rows($select_query) > 0) {
-          while ($fetch_product = mysqli_fetch_assoc($select_query)) {
+        $display_product = mysqli_query($conn, "SELECT * FROM favorites where id_user = " . $_SESSION['id']);
+        if (mysqli_num_rows($display_product) > 0) {
+          while ($fetch_product = mysqli_fetch_assoc($display_product)) {
         ?>
             <div class="product-item">
               <div class="overlay">
@@ -192,21 +162,21 @@ session_start();
                 <span><?php echo $fetch_product['category'] ?></span>
                 <form action="" method="post" class="form-submit">
                   <a href="productDetails.html"><?php echo $fetch_product['name'] ?></a>
-                  <h4><?php echo $fetch_product['price'] ?></h4>
+                  <h4>$<?php echo $fetch_product['price'] ?></h4>
 
                   <input type="hidden" name="product_name" value="<?php echo $fetch_product['name'] ?>">
+                  <input type="hidden" name="id" value="
+                  <?php
+                  $select_id = mysqli_query($conn, "SELECT idProduct FROM products WHERE image = '" . $fetch_product['image'] . "'");
+                   echo $select_id->fetch_assoc()['idProduct']; 
+                   ?>">           <!-- id này là id của fav nên không chấp nhận -->
                   <input type="hidden" name="product_price" value="<?php echo $fetch_product['price'] ?>">
                   <input type="hidden" name="product_image" value="<?php echo $fetch_product['image'] ?>">
+                  
 
               </div>
               <ul class="icons">
-                <li>
-
-                  <button type="submit" class="btn btn-link">
-                    <i class="bx bx-heart"></i>
-                  </button>
-
-                </li>
+                
                 <li>
 
                   <button type="submit" class="btn btn-link">
@@ -219,6 +189,15 @@ session_start();
                   <button type="submit" class="btn btn-link" name="add_to_cart">
                     <i class="bx bx-cart"></i>
                   </button>
+
+                </li>
+                <li>
+
+                  
+                  <a href="delete.php?delete_favorites= <?php echo $fetch_product['id']?>" class="delete-product-btn" onclick="return confirm('Are you sure you want to delete ?');">
+                      <i class="bx bx-trash"></i>
+                    </a>
+                 
 
                 </li>
               </ul>
@@ -237,6 +216,11 @@ session_start();
 
       </div>
     </section>
+    
+            
+
+    <!-- Latest Products -->
+    
 
     <!-- Footer -->
     <footer class="footer">
