@@ -63,7 +63,7 @@ if (isset($_POST['add_to_cart'])) {
     <div class="navigation">
       <div class="nav-center container d-flex">
         <a href="index.php" class="logo">
-          <h1>The Mart</h1>
+        <h1>The Culture &#127936;</h1>
         </a>
 
         <ul class="nav-list d-flex">
@@ -77,10 +77,10 @@ if (isset($_POST['add_to_cart'])) {
             <a href="terms.xml" class="nav-link">Terms</a>
           </li>
           <li class="nav-item">
-            <a href="about.html" class="nav-link">About</a>
+            <a href="about.php" class="nav-link">About</a>
           </li>
           <li class="nav-item">
-            <a href="contact.html" class="nav-link">Contact</a>
+            <a href="contact.php" class="nav-link">Contact</a>
           </li>
 
 
@@ -106,9 +106,18 @@ if (isset($_POST['add_to_cart'])) {
           </a>
           <a href="favorites.php" class="icon">
             <i class="bx bx-heart"></i>
-            <span class="d-flex"><?php $fav_num_result = mysqli_query($conn, "select count(*) as count from favorites");
-                                  $fav_num = mysqli_fetch_assoc($fav_num_result);
-                                  echo $fav_num['count']; ?></span>
+            <span class="d-flex">
+              <?php 
+            if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) {
+              $fav_num_result = mysqli_query($conn, "select count(*) as count from favorites where id_user = " . $_SESSION['id']);
+              $fav_num = mysqli_fetch_assoc($fav_num_result);
+              echo $fav_num['count']; 
+            } else {
+              echo 0;
+            }
+            ?>
+            
+            </span>
           </a>
           <a href="cart.php" class="icon">
             <i class="bx bx-cart"></i>
@@ -145,6 +154,12 @@ if (isset($_POST['add_to_cart'])) {
       </div>
       <div class="product-center container">
         <?php
+        // Check logged in or not
+        if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
+          echo "<a href='login.html' class='alert alert-danger'>You need to login to view your favorites</a>";
+          exit;
+          
+        }
         $display_product = mysqli_query($conn, "SELECT * FROM favorites where id_user = " . $_SESSION['id']);
         if (mysqli_num_rows($display_product) > 0) {
           while ($fetch_product = mysqli_fetch_assoc($display_product)) {

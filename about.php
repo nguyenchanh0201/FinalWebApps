@@ -51,20 +51,20 @@ session_start();
                         <a href="terms.xml" class="nav-link">Terms</a>
                     </li>
                     <li class="nav-item">
-                        <a href="about.html" class="nav-link">About</a>
+                        <a href="about.php" class="nav-link">About</a>
                     </li>
                     <li class="nav-item">
-                        <a href="contact.html" class="nav-link">Contact</a>
+                        <a href="contact.php" class="nav-link">Contact</a>
                     </li>
                 </ul>
 
                 <?php if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) { ?>
-                        <li class="nav-item">
-                            <a href="profile.php" class="nav-link">
-                                <?php echo $_SESSION['username']; ?>
-                            </a>
-                        </li>
-                    <?php } ?>
+                    <li class="nav-item">
+                        <a href="profile.php" class="nav-link">
+                            <?php echo $_SESSION['username']; ?>
+                        </a>
+                    </li>
+                <?php } ?>
                 </ul>
 
                 <div class="icons d-flex">
@@ -104,16 +104,16 @@ session_start();
                 ?>
 
             </div>
-            </div>
-            <div class="about-section">
-                <h1>About Us Page</h1>
-                <p>Some text about who we are and what we do.</p>
-                <p class="cool">Lorem ipsum dolor sit amet consectetur adipisicing elit. Quidem, quae, officia quaerat, necessitatibus est hic nulla tempora quam animi laboriosam ut excepturi. Deserunt harum, id non, sed natus tempora consequatur, sit soluta quas quae sint? Excepturi quae corporis explicabo quibusdam nostrum velit facilis, dolorum odit accusantium blanditiis laboriosam ab asperiores quam beatae maiores mollitia ratione reiciendis pariatur sapiente esse iure quasi alias nemo. Cumque aliquid, sapiente consequuntur necessitatibus quos, sunt fugit totam doloribus, deserunt eius impedit. In itaque temporibus porro commodi, nostrum nemo consequatur</p>
-                <p class="cool">
-                    Lorem ipsum dolor sit, amet consectetur adipisicing elit. Voluptatem non quasi quia repellendus et nihil quaerat! Accusamus laboriosam neque molestias vero repudiandae tempore? Nostrum laudantium, voluptates blanditiis totam numquam ipsa. Autem, qui voluptas? Dolorem mollitia eos esse voluptatibus, suscipit voluptatem cum, laboriosam illum non error eius deleniti, vitae magni!
-                </p>
-            </div>
-            
+        </div>
+        <div class="about-section">
+            <h1>About Us Page</h1>
+            <p>Some text about who we are and what we do.</p>
+            <p class="cool">Lorem ipsum dolor sit amet consectetur adipisicing elit. Quidem, quae, officia quaerat, necessitatibus est hic nulla tempora quam animi laboriosam ut excepturi. Deserunt harum, id non, sed natus tempora consequatur, sit soluta quas quae sint? Excepturi quae corporis explicabo quibusdam nostrum velit facilis, dolorum odit accusantium blanditiis laboriosam ab asperiores quam beatae maiores mollitia ratione reiciendis pariatur sapiente esse iure quasi alias nemo. Cumque aliquid, sapiente consequuntur necessitatibus quos, sunt fugit totam doloribus, deserunt eius impedit. In itaque temporibus porro commodi, nostrum nemo consequatur</p>
+            <p class="cool">
+                Lorem ipsum dolor sit, amet consectetur adipisicing elit. Voluptatem non quasi quia repellendus et nihil quaerat! Accusamus laboriosam neque molestias vero repudiandae tempore? Nostrum laudantium, voluptates blanditiis totam numquam ipsa. Autem, qui voluptas? Dolorem mollitia eos esse voluptatibus, suscipit voluptatem cum, laboriosam illum non error eius deleniti, vitae magni!
+            </p>
+        </div>
+
 </body>
 
 </html>

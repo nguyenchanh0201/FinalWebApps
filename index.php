@@ -15,14 +15,14 @@ if (isset($_POST['add_to_cart'])) {
     $stmt->execute();
     $select_cart = $stmt->get_result();
     if (mysqli_num_rows($select_cart) > 0) {
-      $fetch_cart = mysqli_fetch_assoc($select_cart);
-      $product_quantity = $fetch_cart['quantity'] + 1;
-      $update_cart = mysqli_query($conn, "UPDATE cart SET quantity = $product_quantity WHERE name = '$product_name'");
+        $fetch_cart = mysqli_fetch_assoc($select_cart);
+        $product_quantity = $fetch_cart['quantity'] + 1;
+        $update_cart = mysqli_query($conn, "UPDATE cart SET quantity = $product_quantity WHERE name = '$product_name'");
     } else {
-      $user_id = $_SESSION['id']; // Assuming you have user_id in session after user login
-    $insert_product = mysqli_query($conn, "INSERT INTO cart (name, price, image, quantity, id_product, id_user) VALUES ('$product_name', '$product_price', '$product_image', $product_quantity, $product_id, $user_id)");
+        $user_id = $_SESSION['id']; // Assuming you have user_id in session after user login
+        $insert_product = mysqli_query($conn, "INSERT INTO cart (name, price, image, quantity, id_product, id_user) VALUES ('$product_name', '$product_price', '$product_image', $product_quantity, $product_id, $user_id)");
     }
-  }
+}
 
 //add to favorites
 if (isset($_POST['add_to_favorites'])) {
@@ -32,7 +32,16 @@ if (isset($_POST['add_to_favorites'])) {
     $product_id = $_POST['id'];
     $product_category = $_POST['category'];
     $user_id = $_SESSION['id']; // Assuming you have user_id in session after user login
-    $insert_favorites = mysqli_query($conn, "INSERT INTO favorites (name, price, image, id_product, id_user, category) VALUES ('$product_name', '$product_price', '$product_image', $product_id, $user_id, '$product_category')");
+    //Check if product exists in favorites
+    $stmt = $conn->prepare("SELECT * FROM favorites WHERE id_Product = ? AND id_user = ?");
+    $stmt->bind_param("ii", $product_id, $user_id);
+    $stmt->execute();
+    $select_favorites = $stmt->get_result();
+    if (mysqli_num_rows($select_favorites) > 0) {
+        echo "<script>alert('Product already added to favorites')</script>";
+    } else {
+        $insert_favorites = mysqli_query($conn, "INSERT INTO favorites (name, price, image, id_product, id_user, category) VALUES ('$product_name', '$product_price', '$product_image', $product_id, $user_id, '$product_category')");
+    }
 }
 
 ?>
@@ -93,10 +102,10 @@ if (isset($_POST['add_to_favorites'])) {
                         <a href="terms.xml" class="nav-link">Terms</a>
                     </li>
                     <li class="nav-item">
-                        <a href="about.html" class="nav-link">About</a>
+                        <a href="about.php" class="nav-link">About</a>
                     </li>
                     <li class="nav-item">
-                        <a href="contact.html" class="nav-link">Contact</a>
+                        <a href="contact.php" class="nav-link">Contact</a>
                     </li>
 
 
@@ -122,9 +131,17 @@ if (isset($_POST['add_to_favorites'])) {
                     </a>
                     <a href="favorites.php" class="icon">
                         <i class="bx bx-heart"></i>
-                        <span class="d-flex"><?php $fav_num_result = mysqli_query($conn, "select count(*) as count from favorites");
-                                                $fav_num = mysqli_fetch_assoc($fav_num_result);
-                                                echo $fav_num['count']; ?></span>
+                        <span class="d-flex"><?php
+                                                if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) {
+                                                    $fav_num_result = mysqli_query($conn, "select count(*) as count from favorites where id_user = " . $_SESSION['id']);
+                                                    $fav_num = mysqli_fetch_assoc($fav_num_result);
+                                                    echo $fav_num['count'];
+                                                } else {
+                                                    echo 0;
+                                                }
+                                                ?>
+
+                        </span>
                     </a>
                     <a href="cart.php" class="icon">
                         <i class="bx bx-cart"></i>
@@ -156,7 +173,7 @@ if (isset($_POST['add_to_favorites'])) {
                             <li class="glide__slide">
                                 <div class="center">
                                     <div class="left">
-                                    <span>New Inspiration 2024</span>
+                                        <span>New Inspiration 2024</span>
                                         <h1>THE PERFECT MATCH!</h1>
                                         <p>Brand new basketball shoes collection with many choices</p>
                                         <a href="search.php" class="hero-btn">SHOP NOW</a>
@@ -192,7 +209,7 @@ if (isset($_POST['add_to_favorites'])) {
                                     </div>
                                 </div>
                             </li>
-                            
+
                         </ul>
                     </div>
                 </div>
@@ -208,33 +225,33 @@ if (isset($_POST['add_to_favorites'])) {
         <div class="cat-center">
             <div class="cat">
                 <a href="search.php?keyword=Nike Basketball&search=Search">
-                <img src="./images/nike.png" alt="" />
-                <div>
-                    <p>NIKE</p>
-                </div>
+                    <img src="./images/nike.png" alt="" />
+                    <div>
+                        <p>NIKE</p>
+                    </div>
                 </a>
-                
+
             </div>
             <div class="cat">
-            <a href="search.php?keyword=Adidas Basketball&search=Search">
-                <img src="./images/adidas.png" alt="" />
-                <div>
-                    <p>ADIDAS</p>
-                </div>
+                <a href="search.php?keyword=Adidas Basketball&search=Search">
+                    <img src="./images/adidas.png" alt="" />
+                    <div>
+                        <p>ADIDAS</p>
+                    </div>
             </div>
             <div class="cat">
-            <a href="search.php?keyword=Puma Basketball&search=Search">
-                <img src="./images/puma.png" alt="" />
-                <div>
-                    <p>PUMA</p>
-                </div>
+                <a href="search.php?keyword=Puma Basketball&search=Search">
+                    <img src="./images/puma.png" alt="" />
+                    <div>
+                        <p>PUMA</p>
+                    </div>
             </div>
             <div class="cat">
-            <a href="search.php?keyword=New Balance Basketball&search=Search">
-                <img src="./images/nb.png" alt="" />
-                <div>
-                    <p>NEW BALANCE</p>
-                </div>
+                <a href="search.php?keyword=New Balance Basketball&search=Search">
+                    <img src="./images/nb.png" alt="" />
+                    <div>
+                        <p>NEW BALANCE</p>
+                    </div>
             </div>
 
         </div>
@@ -269,10 +286,10 @@ if (isset($_POST['add_to_favorites'])) {
                                 <h4>$<?php echo $fetch_product['price'] ?></h4>
 
                                 <input type="hidden" name="product_name" value="<?php echo $fetch_product['name'] ?>">
-                    <input type="hidden" name="id" value="<?php echo $fetch_product['idProduct'] ?>">
-                    <input type="hidden" name="product_price" value="<?php echo $fetch_product['price'] ?>">
-                    <input type="hidden" name="product_image" value="<?php echo $fetch_product['image'] ?>">
-                    <input type="hidden" name="category" value="<?php echo $fetch_product['category'] ?>">            
+                                <input type="hidden" name="id" value="<?php echo $fetch_product['idProduct'] ?>">
+                                <input type="hidden" name="product_price" value="<?php echo $fetch_product['price'] ?>">
+                                <input type="hidden" name="product_image" value="<?php echo $fetch_product['image'] ?>">
+                                <input type="hidden" name="category" value="<?php echo $fetch_product['category'] ?>">
 
                         </div>
                         <ul class="icons">
@@ -285,7 +302,7 @@ if (isset($_POST['add_to_favorites'])) {
                             </li>
                             <li>
 
-                                <a href="search.php?keyword=<?php echo $fetch_product['name'] ; ?>&search=Search" class="btn btn-link">
+                                <a href="search.php?keyword=<?php echo $fetch_product['name']; ?>&search=Search" class="btn btn-link">
                                     <i class="bx bx-search"></i>
                                 </a>
 
@@ -362,15 +379,16 @@ if (isset($_POST['add_to_favorites'])) {
                                 <h4>$<?php echo $fetch_product['price'] ?></h4>
 
                                 <input type="hidden" name="product_name" value="<?php echo $fetch_product['name'] ?>">
-                    <input type="hidden" name="id" value="<?php echo $fetch_product['idProduct'] ?>">
-                    <input type="hidden" name="product_price" value="<?php echo $fetch_product['price'] ?>">
-                    <input type="hidden" name="product_image" value="<?php echo $fetch_product['image'] ?>">
+                                <input type="hidden" name="id" value="<?php echo $fetch_product['idProduct'] ?>">
+                                <input type="hidden" name="category" value="<?php echo $fetch_product['category']?>"> 
+                                <input type="hidden" name="product_price" value="<?php echo $fetch_product['price'] ?>">
+                                <input type="hidden" name="product_image" value="<?php echo $fetch_product['image'] ?>">
 
                         </div>
                         <ul class="icons">
                             <li>
 
-                                <button type="submit" class="btn btn-link">
+                            <button type="submit" class="btn btn-link" name="add_to_favorites">
                                     <i class="bx bx-heart"></i>
                                 </button>
 
@@ -400,7 +418,7 @@ if (isset($_POST['add_to_favorites'])) {
                 echo "<div class='alert alert-danger'>No product found</div>";
             }
             ?>
-        
+
 
 
         </div>
@@ -448,15 +466,16 @@ if (isset($_POST['add_to_favorites'])) {
                                 <h4>$<?php echo $fetch_product['price'] ?></h4>
 
                                 <input type="hidden" name="product_name" value="<?php echo $fetch_product['name'] ?>">
-                    <input type="hidden" name="id" value="<?php echo $fetch_product['idProduct'] ?>">
-                    <input type="hidden" name="product_price" value="<?php echo $fetch_product['price'] ?>">
-                    <input type="hidden" name="product_image" value="<?php echo $fetch_product['image'] ?>">
+                                <input type="hidden" name="id" value="<?php echo $fetch_product['idProduct'] ?>">
+                                <input type="hidden" name="category" value="<?php echo $fetch_product['category']?>"> 
+                                <input type="hidden" name="product_price" value="<?php echo $fetch_product['price'] ?>">
+                                <input type="hidden" name="product_image" value="<?php echo $fetch_product['image'] ?>">
 
                         </div>
                         <ul class="icons">
                             <li>
 
-                                <button type="submit" class="btn btn-link">
+                            <button type="submit" class="btn btn-link" name="add_to_favorites">
                                     <i class="bx bx-heart"></i>
                                 </button>
 
@@ -486,7 +505,7 @@ if (isset($_POST['add_to_favorites'])) {
                 echo "<div class='alert alert-danger'>No product found</div>";
             }
             ?>
-        
+
 
 
         </div>
@@ -511,7 +530,7 @@ if (isset($_POST['add_to_favorites'])) {
             </div>
         </div>
     </section>
-    
+
 
     <!-- Footer -->
     <footer class="footer">
