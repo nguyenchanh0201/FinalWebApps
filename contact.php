@@ -53,7 +53,7 @@ session_start();
             <a href="terms.xml" class="nav-link">Terms</a>
           </li>
           <li class="nav-item">
-            <a href="about.html" class="nav-link">About</a>
+            <a href="about.php" class="nav-link">About</a>
           </li>
           <li class="nav-item">
             <a href="#" class="nav-link">Contact</a>

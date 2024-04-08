@@ -33,8 +33,19 @@ if (isset($_POST['add_to_favorites'])) {
   $product_name = $_POST['product_name'];
   $product_price = $_POST['product_price'];
   $product_image = $_POST['product_image'];
-
-  $insert_product = mysqli_query($conn, "INSERT INTO favorites (name, price, image) VALUES ('$product_name', '$product_price', '$product_image')");
+  $product_id = $_POST['id'];
+  $product_category = $_POST['category'];
+  $user_id = $_SESSION['id']; // Assuming you have user_id in session after user login
+  //Check if product exists in favorites
+  $stmt = $conn->prepare("SELECT * FROM favorites WHERE id_Product = ? AND id_user = ?");
+  $stmt->bind_param("ii", $product_id, $user_id);
+  $stmt->execute();
+  $select_favorites = $stmt->get_result();
+  if (mysqli_num_rows($select_favorites) > 0) {
+      echo "<script>alert('Product already added to favorites')</script>";
+  } else {
+      $insert_favorites = mysqli_query($conn, "INSERT INTO favorites (name, price, image, id_product, id_user, category) VALUES ('$product_name', '$product_price', '$product_image', $product_id, $user_id, '$product_category')");
+  }
 }
 
 
@@ -73,8 +84,8 @@ if (isset($_POST['add_to_favorites'])) {
   </div>
   <div class="navigation">
     <div class="nav-center container d-flex">
-      <a href="index.html" class="logo">
-        <h1>The Mart</h1>
+      <a href="index.php" class="logo">
+      <h1>The Culture &#127936;</h1>
       </a>
 
       <ul class="nav-list d-flex">
@@ -88,12 +99,12 @@ if (isset($_POST['add_to_favorites'])) {
           <a href="terms.xml" class="nav-link">Terms</a>
         </li>
         <li class="nav-item">
-          <a href="about.html" class="nav-link">About</a>
+          <a href="about.php" class="nav-link">About</a>
         </li>
         <li class="nav-item">
-          <a href="contact.html" class="nav-link">Contact</a>
+          <a href="contact.php" class="nav-link">Contact</a>
         </li>
-      </ul>
+      
 
       <?php if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) { ?>
                         <li class="nav-item">
@@ -117,10 +128,18 @@ if (isset($_POST['add_to_favorites'])) {
                     </a>
                     <a href="favorites.php" class="icon">
                         <i class="bx bx-heart"></i>
-                        <span class="d-flex"><?php $fav_num_result = mysqli_query($conn, "select count(*) as count from favorites");
-                                                $fav_num = mysqli_fetch_assoc($fav_num_result);
-                                                echo $fav_num['count']; ?></span>
-                    </a>
+                        <span class="d-flex"><?php 
+            if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) {
+              $fav_num_result = mysqli_query($conn, "select count(*) as count from favorites where id_user = " . $_SESSION['id']);
+              $fav_num = mysqli_fetch_assoc($fav_num_result);
+              echo $fav_num['count']; 
+            } else {
+              echo 0;
+            }
+            ?>
+            
+            </span>
+          </a>
                     <a href="cart.php" class="icon">
                         <i class="bx bx-cart"></i>
                         <span class="d-flex"><?php $cart_num_result = mysqli_query($conn, "select count(*) as count from cart");
@@ -193,6 +212,7 @@ if (isset($_POST['add_to_favorites'])) {
         }
       } else {
         echo "<div class='alert alert-danger'>No product found</div>";
+
       }
       ?>
     </table>
@@ -225,13 +245,20 @@ if (isset($_POST['add_to_favorites'])) {
       </table>
       <?php
       //Check logged in
-      if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) {
-        echo '<a href="checkout.php" class="checkout btn">Proceed To Checkout</a>';
-        echo '<a href="search.php" class="checkout btn" style="width: 117px; text-align:center;">Continue Shopping</a>';
+      // Check if there is any product, if not then dont let click on checkout
+      $check_cart = mysqli_query($conn, "SELECT count(*) FROM cart");
+      $cart_count = mysqli_fetch_assoc($check_cart);
+      if ($cart_count['count(*)'] > 0) {
+        if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) {
+          echo '<a href="checkout.php" class="checkout btn">Proceed To Checkout</a>';
+          echo '<a href="search.php" style="width: 117px" class="checkout btn">Continue Shopping</a>';
+        } else {
+          echo '<a href="login.html" class="checkout btn">Login To Checkout</a>';
+        }
+      } else {
+        echo '<a href="search.php" class="checkout btn">Add Products To Cart</a>';
       }
-      else {
-        echo '<a href="login.html" class="checkout btn">Login To Checkout</a>';
-      }
+      
        ?>
     </div>
 
@@ -265,6 +292,8 @@ if (isset($_POST['add_to_favorites'])) {
                 <h4><?php echo $fetch_product['price'] ?></h4>
 
                 <input type="hidden" name="product_name" value="<?php echo $fetch_product['name'] ?>">
+                <input type="hidden" name="id" value="<?php echo $fetch_product['idProduct'] ?>">
+                <input type="hidden" name="category" value="<?php echo $fetch_product['category']?>"> 
                 <input type="hidden" name="product_price" value="<?php echo $fetch_product['price'] ?>">
                 <input type="hidden" name="product_image" value="<?php echo $fetch_product['image'] ?>">
 
@@ -274,7 +303,7 @@ if (isset($_POST['add_to_favorites'])) {
 
                 <button type="submit" class="btn btn-link" name="add_to_favorites">
                   <i class="bx bx-heart"></i>
-
+                
                 </button>
 
               </li>

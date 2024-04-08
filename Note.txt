@@ -1,3 +1,6 @@
 8/4/2024
-- Thêm tính năng add vào favorites 
-- Từ favorites có thể 
+- Đã hoàn thành các chức năng cơ bản 
+- Thiếu sort (tối nay hoàn thành)
+- Tạo trang admin cho login admin cũng như là edit, xem doanh thu (ngày tháng năm nếu được), các order
+
+
