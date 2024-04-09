@@ -5,6 +5,10 @@ session_start();
 include 'config.php';
 
 if (isset($_POST['add_to_cart'])) {
+    // Check logged in 
+    if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] != true) {
+        echo "<script>window.location.href='login.html'</script>";
+    }
     $product_name = $_POST['product_name'];
     $product_price = $_POST['product_price'];
     $product_image = $_POST['product_image'];
@@ -26,6 +30,9 @@ if (isset($_POST['add_to_cart'])) {
 
 //add to favorites
 if (isset($_POST['add_to_favorites'])) {
+    if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] != true) {
+        echo "<script>window.location.href='login.html'</script>";
+    }
     $product_name = $_POST['product_name'];
     $product_price = $_POST['product_price'];
     $product_image = $_POST['product_image'];
@@ -214,6 +221,7 @@ if (isset($_POST['add_to_favorites'])) {
                     </div>
                 </div>
             </div>
+        </div>
 
 
 
@@ -365,7 +373,7 @@ if (isset($_POST['add_to_favorites'])) {
             ?>
                     <div class="product-item">
                         <div class="overlay">
-                            <a href="productDetails.html" class="product-thumb">
+                        <a href="productDetails.php?product_name=<?php echo urlencode($fetch_product['name']); ?>" class="product-thumb">
                                 <img src="<?php echo $fetch_product['image'] ?>" alt="" />
                             </a>
                             <span class="discount">40%</span>
@@ -375,7 +383,7 @@ if (isset($_POST['add_to_favorites'])) {
 
                             <span><?php echo $fetch_product['category'] ?></span>
                             <form action="" method="post" class="form-submit">
-                                <a href="productDetails.html"><?php echo $fetch_product['name'] ?></a>
+                            <a href="productDetails.php?product_name=<?php echo urlencode($fetch_product['name']); ?>" ><?php echo $fetch_product['name'] ?></a>
                                 <h4>$<?php echo $fetch_product['price'] ?></h4>
 
                                 <input type="hidden" name="product_name" value="<?php echo $fetch_product['name'] ?>">
@@ -452,7 +460,7 @@ if (isset($_POST['add_to_favorites'])) {
             ?>
                     <div class="product-item">
                         <div class="overlay">
-                            <a href="productDetails.html" class="product-thumb">
+                        <a href="productDetails.php?product_name=<?php echo urlencode($fetch_product['name']); ?>" class="product-thumb">
                                 <img src="<?php echo $fetch_product['image'] ?>" alt="" />
                             </a>
                             <span class="discount">40%</span>
@@ -462,7 +470,7 @@ if (isset($_POST['add_to_favorites'])) {
 
                             <span><?php echo $fetch_product['category'] ?></span>
                             <form action="" method="post" class="form-submit">
-                                <a href="productDetails.html"><?php echo $fetch_product['name'] ?></a>
+                            <a href="productDetails.php?product_name=<?php echo urlencode($fetch_product['name']); ?>" ><?php echo $fetch_product['name'] ?></a>
                                 <h4>$<?php echo $fetch_product['price'] ?></h4>
 
                                 <input type="hidden" name="product_name" value="<?php echo $fetch_product['name'] ?>">

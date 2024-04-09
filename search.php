@@ -2,6 +2,9 @@
 include 'config.php';
 session_start();
 if (isset($_POST['add_to_cart'])) {
+  if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] != true) {
+    echo "<script>window.location.href='login.html'</script>";
+  }
   $product_name = $_POST['product_name'];
   $product_price = $_POST['product_price'];
   $product_image = $_POST['product_image'];
@@ -17,12 +20,15 @@ if (isset($_POST['add_to_cart'])) {
     $update_cart = mysqli_query($conn, "UPDATE cart SET quantity = $product_quantity WHERE name = '$product_name'");
   } else {
     $user_id = $_SESSION['id']; // Assuming you have user_id in session after user login
-  $insert_product = mysqli_query($conn, "INSERT INTO cart (name, price, image, quantity, id_product, id_user) VALUES ('$product_name', '$product_price', '$product_image', $product_quantity, $product_id, $user_id)");
+    $insert_product = mysqli_query($conn, "INSERT INTO cart (name, price, image, quantity, id_product, id_user) VALUES ('$product_name', '$product_price', '$product_image', $product_quantity, $product_id, $user_id)");
   }
 }
 
 //add to favorites
 if (isset($_POST['add_to_favorites'])) {
+  if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] != true) {
+    echo "<script>window.location.href='login.html'</script>";
+  }
   $product_name = $_POST['product_name'];
   $product_price = $_POST['product_price'];
   $product_image = $_POST['product_image'];
@@ -35,9 +41,9 @@ if (isset($_POST['add_to_favorites'])) {
   $stmt->execute();
   $select_favorites = $stmt->get_result();
   if (mysqli_num_rows($select_favorites) > 0) {
-      echo "<script>alert('Product already added to favorites')</script>";
+    echo "<script>alert('Product already added to favorites')</script>";
   } else {
-      $insert_favorites = mysqli_query($conn, "INSERT INTO favorites (name, price, image, id_product, id_user, category) VALUES ('$product_name', '$product_price', '$product_image', $product_id, $user_id, '$product_category')");
+    $insert_favorites = mysqli_query($conn, "INSERT INTO favorites (name, price, image, id_product, id_user, category) VALUES ('$product_name', '$product_price', '$product_image', $product_id, $user_id, '$product_category')");
   }
 }
 
@@ -105,7 +111,7 @@ if (isset($_GET['page-nr'])) {
     <div class="navigation">
       <div class="nav-center container d-flex">
         <a href="index.php" class="logo">
-        <h1>The Culture &#127936;</h1>
+          <h1>The Culture &#127936;</h1>
         </a>
 
         <ul class="nav-list d-flex">
@@ -124,15 +130,26 @@ if (isset($_GET['page-nr'])) {
           <li class="nav-item">
             <a href="contact.php" class="nav-link">Contact</a>
           </li>
-        
-
-        <?php if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) { ?>
-          <li class="nav-item">
-            <a href="#" class="nav-link">
-              <?php echo $_SESSION['username']; ?>
-            </a>
+          <li>
+          <form action="search.php?manage=search" method="GET">
+            <input type="text" name="keyword" class="search" placeholder="Search here!">
+            <input type="submit" name="search" class="submit" value="Search" style="width: 70px;
+                      background-color: #2579f2;
+                      color: #ffffff;
+                      border-radius: 8px;
+                      border: none;
+                      box-shadow: 2px 2px 4px rgba(0, 0, 0, .4);">
+          </form>
           </li>
-        <?php } ?>
+
+
+          <?php if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) { ?>
+            <li class="nav-item">
+              <a href="#" class="nav-link">
+                <?php echo $_SESSION['username']; ?>
+              </a>
+            </li>
+          <?php } ?>
         </ul>
 
         <div class="icons d-flex">
@@ -143,22 +160,22 @@ if (isset($_GET['page-nr'])) {
               <i class="bx bx-user"></i>
             </a>
           <?php } ?>
-            
 
-          
+
+
 
           <a href="favorites.php" class="icon">
             <i class="bx bx-heart"></i>
-            <span class="d-flex"><?php 
-            if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) {
-              $fav_num_result = mysqli_query($conn, "select count(*) as count from favorites where id_user = " . $_SESSION['id']);
-              $fav_num = mysqli_fetch_assoc($fav_num_result);
-              echo $fav_num['count']; 
-            } else {
-              echo 0;
-            }
-            ?>
-            
+            <span class="d-flex"><?php
+                                  if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) {
+                                    $fav_num_result = mysqli_query($conn, "select count(*) as count from favorites where id_user = " . $_SESSION['id']);
+                                    $fav_num = mysqli_fetch_assoc($fav_num_result);
+                                    echo $fav_num['count'];
+                                  } else {
+                                    echo 0;
+                                  }
+                                  ?>
+
             </span>
           </a>
           <a href="cart.php" class="icon">
@@ -175,20 +192,22 @@ if (isset($_GET['page-nr'])) {
             echo ' ';
           }
           ?>
-          
+
+        </div>
+        <div class="hamburger">
+          <i class="bx bx-menu-alt-left"></i>
         </div>
       </div>
       <!-- All Products -->
       <section class="section all-products" id="products">
         <div class="top container">
-        <form action="search.php?manage=search" method="GET">
-            <input type="text" name="keyword" class="search" placeholder="Search here!">
-            <input type="submit" name="search" class="submit" value="Search" style="width: 70px;
-                      background-color: #2579f2;
-                      color: #ffffff;
-                      border-radius: 8px;
-                      border: none;
-                      box-shadow: 2px 2px 4px rgba(0, 0, 0, .4);">
+          
+          <form method="get">
+            <select name="sort" onchange="this.form.submit()">
+              <option value="">Sort by price</option>
+              <option value="1">Low to High</option>
+              <option value="2">High to Low</option>
+            </select>
           </form>
           <?php
           if (isset($_GET['search'])) {
@@ -198,12 +217,13 @@ if (isset($_GET['page-nr'])) {
             echo "Search Results for: $keyword";
           } else {
             echo "<h1>All Products</h1>";
+            
           }
 
           ?>
-          
 
-          
+
+
         </div>
 
 
@@ -212,13 +232,22 @@ if (isset($_GET['page-nr'])) {
           <?php
 
           // } else {
-            
+
           $start = 0; // Define start as per your requirement
           $products_per_page = 4; // Define products_per_page as per your requirement
-            
 
 
-          $select_query = mysqli_query($conn, "SELECT * FROM products order by rand() limit $start, $products_per_page");
+
+          $select_query = mysqli_query($conn, "SELECT * FROM products ");
+          if (isset($_GET['sort'])) {
+            $sort = $_GET['sort'];
+            if ($sort == 1) {
+              $select_query = mysqli_query($conn, "SELECT * FROM products ORDER BY price ASC");
+            } else {
+              $select_query = mysqli_query($conn, "SELECT * FROM products ORDER BY price DESC");
+            }
+        }
+
           if (isset($_GET['search'])) {
             $keyword = $_GET['keyword'];
             // Sanitize the keyword
@@ -227,12 +256,13 @@ if (isset($_GET['page-nr'])) {
             // Modify the SQL query to get products related to the keyword
             $select_query = mysqli_query($conn, "SELECT * FROM products WHERE name LIKE '%$keyword%' OR category LIKE '%$keyword%'");
           }
+          
           if (mysqli_num_rows($select_query) > 0) {
             while ($fetch_product = mysqli_fetch_assoc($select_query)) {
           ?>
               <div class="product-item">
                 <div class="overlay">
-                  <a href="productDetails.php?product_name=<?php echo urlencode($fetch_product['name']); ?>"" class="product-thumb">
+                  <a href="productDetails.php?product_name=<?php echo urlencode($fetch_product['name']); ?>"" class=" product-thumb">
                     <img src="<?php echo $fetch_product['image'] ?>" alt="" />
                   </a>
                   <span class="discount">40%</span>
@@ -247,7 +277,7 @@ if (isset($_GET['page-nr'])) {
 
                     <input type="hidden" name="product_name" value="<?php echo $fetch_product['name'] ?>">
                     <input type="hidden" name="id" value="<?php echo $fetch_product['idProduct'] ?>">
-                    <input type="hidden" name="category" value="<?php echo $fetch_product['category'] ?>">  
+                    <input type="hidden" name="category" value="<?php echo $fetch_product['category'] ?>">
                     <input type="hidden" name="product_price" value="<?php echo $fetch_product['price'] ?>">
                     <input type="hidden" name="product_image" value="<?php echo $fetch_product['image'] ?>">
 
@@ -260,13 +290,7 @@ if (isset($_GET['page-nr'])) {
                     </button>
 
                   </li>
-                  <li>
 
-                    <button type="submit" class="btn btn-link">
-                      <i class="bx bx-search"></i>
-                    </button>
-
-                  </li>
                   <li>
 
                     <button type="submit" class="btn btn-link" name="add_to_cart">
@@ -275,7 +299,7 @@ if (isset($_GET['page-nr'])) {
 
                   </li>
                 </ul>
-                
+
                 </form>
 
 
@@ -295,50 +319,7 @@ if (isset($_GET['page-nr'])) {
         </div>
       </section>
 
-      <section class="pagination">
-        <div class="container">
-          <h4>Showing <?php echo $page; ?> out of <?php echo $nb_of_pages ?></h4> <br>
-
-          <?php
-          if (isset($_GET['page-nr']) && $_GET['page-nr'] > 1) {
-          ?>
-            <a href="?page-nr=<?php echo $_GET['page-nr'] - 1 ?>"><i class="bx bx-left-arrow-alt"></i></a>
-          <?php
-          } else {
-          ?>
-            <a href=""><i class="bx bx-left-arrow-alt"></i></a>
-          <?php
-          }
-          ?>
-
-
-
-
-          <a href="?page-nr=1">1</a>
-          <a href="?page-nr=2">2</a>
-          <a href="?page-nr=3">3</a>
-          <a href="?page-nr=4">4</a>
-          <?php
-          if (!isset($_GET['page-nr'])) {
-
-          ?>
-            <a href="?page-nr=2"><i class="bx bx-right-arrow-alt"></i></a>
-            <?php
-          } else {
-            if ($_GET['page-nr'] >= $nb_of_pages) {
-
-            ?>
-              <a href=""><i class="bx bx-right-arrow-alt"></i></a>
-            <?php
-            } else {
-            ?>
-              <a href="?page-nr=<?php echo $_GET['page-nr'] + 1 ?>"><i class="bx bx-right-arrow-alt"></i></a>
-          <?php
-            }
-          }
-          ?>
-        </div>
-      </section>
+      
       <!-- Footer -->
       <footer class="footer">
         <div class="row">
@@ -368,5 +349,10 @@ if (isset($_GET['page-nr'])) {
 
     </div>
 </body>
-
+<script>
+  if (window.history.replaceState) {
+    window.history.replaceState(null, null, window.location.href);
+  }
+</script>
+<script src="./js/index.js"></script>
 </html>
