@@ -36,7 +36,6 @@
     if (!$order_detail_query) {
         echo "Error: " . $insert_order_detail . "<br>" . mysqli_error($conn);
     } else {
-        echo "Order placed successfully!";
-        echo "<a href='index.php'>Back to Home</a>";
+        header('Location: track_order.php');
     }
 ?>

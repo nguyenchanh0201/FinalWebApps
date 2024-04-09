@@ -1,6 +1,14 @@
 8/4/2024
 - Đã hoàn thành các chức năng cơ bản 
-- Thiếu sort (tối nay hoàn thành)
+
+
+- Ép buộc đăng nhập 
+
+
+
+9/4/2024
+- Sửa nút search ở search.php thành xem details
+- Update sửa login ở cart
+- Sửa trang contact và about 
 - Tạo trang admin cho login admin cũng như là edit, xem doanh thu (ngày tháng năm nếu được), các order
-
-
+- Thiếu sort (tối nay hoàn thành)

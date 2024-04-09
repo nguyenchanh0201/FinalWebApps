@@ -5,12 +5,12 @@ session_start();
 //update query 
 if (isset($_POST['update_product_quantity'])) {
   $update_value = $_POST['update_quantity'];
-  
+
   //echo $update_value;
   $update_id = $_POST['update_quantity_id'];
   //echo $update_id;
   $update_quantity_query = mysqli_query($conn, "UPDATE cart SET quantity = '$update_value' WHERE id = '$update_id'");
-  
+
   if ($update_quantity_query) {
     echo "Quantity updated successfully";
     header("location:cart.php");
@@ -21,15 +21,37 @@ if (isset($_POST['update_product_quantity'])) {
 
 //add to cart
 if (isset($_POST['add_to_cart'])) {
+  // Check logged in 
+  if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] != true) {
+    echo "<script>window.location.href='login.html'</script>";
+  }
   $product_name = $_POST['product_name'];
   $product_price = $_POST['product_price'];
   $product_image = $_POST['product_image'];
   $product_quantity = 1;
-
-  $insert_product = mysqli_query($conn, "INSERT INTO cart (name, price, image, quantity) VALUES ('$product_name', '$product_price', '$product_image', $product_quantity)");
+  $product_id = $_POST['id'];
+  $stmt = $conn->prepare("SELECT * FROM cart WHERE name = ?");
+  $stmt->bind_param("s", $product_name);
+  $stmt->execute();
+  $select_cart = $stmt->get_result();
+  if (mysqli_num_rows($select_cart) > 0) {
+    $fetch_cart = mysqli_fetch_assoc($select_cart);
+    $product_quantity = $fetch_cart['quantity'] + 1;
+    $update_cart = mysqli_query($conn, "UPDATE cart SET quantity = $product_quantity WHERE name = '$product_name'");
+  } else {
+    $user_id = $_SESSION['id']; // Assuming you have user_id in session after user login
+    $insert_product = mysqli_query($conn, "INSERT INTO cart (name, price, image, quantity, id_product, id_user) VALUES ('$product_name', '$product_price', '$product_image', $product_quantity, $product_id, $user_id)");
+  }
 }
+
+
+
 // add to favorites
 if (isset($_POST['add_to_favorites'])) {
+  // Check logged in
+  if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] != true) {
+    echo "<script>window.location.href='login.html'</script>";
+  }
   $product_name = $_POST['product_name'];
   $product_price = $_POST['product_price'];
   $product_image = $_POST['product_image'];
@@ -42,9 +64,9 @@ if (isset($_POST['add_to_favorites'])) {
   $stmt->execute();
   $select_favorites = $stmt->get_result();
   if (mysqli_num_rows($select_favorites) > 0) {
-      echo "<script>alert('Product already added to favorites')</script>";
+    echo "<script>alert('Product already added to favorites')</script>";
   } else {
-      $insert_favorites = mysqli_query($conn, "INSERT INTO favorites (name, price, image, id_product, id_user, category) VALUES ('$product_name', '$product_price', '$product_image', $product_id, $user_id, '$product_category')");
+    $insert_favorites = mysqli_query($conn, "INSERT INTO favorites (name, price, image, id_product, id_user, category) VALUES ('$product_name', '$product_price', '$product_image', $product_id, $user_id, '$product_category')");
   }
 }
 
@@ -85,7 +107,7 @@ if (isset($_POST['add_to_favorites'])) {
   <div class="navigation">
     <div class="nav-center container d-flex">
       <a href="index.php" class="logo">
-      <h1>The Culture &#127936;</h1>
+        <h1>The Culture &#127936;</h1>
       </a>
 
       <ul class="nav-list d-flex">
@@ -104,65 +126,65 @@ if (isset($_POST['add_to_favorites'])) {
         <li class="nav-item">
           <a href="contact.php" class="nav-link">Contact</a>
         </li>
-      
 
-      <?php if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) { ?>
-                        <li class="nav-item">
-                            <a href="profile.php" class="nav-link">
-                                <?php echo $_SESSION['username']; ?>
-                            </a>
-                        </li>
-                    <?php } ?>
-                </ul>
 
-                <div class="icons d-flex">
-                    <?php if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) { ?>
+        <?php if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) { ?>
+          <li class="nav-item">
+            <a href="profile.php" class="nav-link">
+              <?php echo $_SESSION['username']; ?>
+            </a>
+          </li>
+        <?php } ?>
+      </ul>
 
-                    <?php } else { ?>
-                        <a href="login.html" class="icon">
-                            <i class="bx bx-user"></i>
-                        </a>
-                    <?php } ?>
-                    <a href="search.php" class="icon">
-                        <i class="bx bx-search"></i>
-                    </a>
-                    <a href="favorites.php" class="icon">
-                        <i class="bx bx-heart"></i>
-                        <span class="d-flex"><?php 
-            if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) {
-              $fav_num_result = mysqli_query($conn, "select count(*) as count from favorites where id_user = " . $_SESSION['id']);
-              $fav_num = mysqli_fetch_assoc($fav_num_result);
-              echo $fav_num['count']; 
-            } else {
-              echo 0;
-            }
-            ?>
-            
-            </span>
+      <div class="icons d-flex">
+        <?php if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) { ?>
+
+        <?php } else { ?>
+          <a href="login.html" class="icon">
+            <i class="bx bx-user"></i>
           </a>
-                    <a href="cart.php" class="icon">
-                        <i class="bx bx-cart"></i>
-                        <span class="d-flex"><?php $cart_num_result = mysqli_query($conn, "select count(*) as count from cart");
-                                                $cart_num = mysqli_fetch_assoc($cart_num_result);
-                                                echo $cart_num['count']; ?></span>
-                    </a>
-                </div>
+        <?php } ?>
+        <a href="search.php" class="icon">
+          <i class="bx bx-search"></i>
+        </a>
+        <a href="favorites.php" class="icon">
+          <i class="bx bx-heart"></i>
+          <span class="d-flex"><?php
+                                if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) {
+                                  $fav_num_result = mysqli_query($conn, "select count(*) as count from favorites where id_user = " . $_SESSION['id']);
+                                  $fav_num = mysqli_fetch_assoc($fav_num_result);
+                                  echo $fav_num['count'];
+                                } else {
+                                  echo 0;
+                                }
+                                ?>
+
+          </span>
+        </a>
+        <a href="cart.php" class="icon">
+          <i class="bx bx-cart"></i>
+          <span class="d-flex"><?php $cart_num_result = mysqli_query($conn, "select count(*) as count from cart");
+                                $cart_num = mysqli_fetch_assoc($cart_num_result);
+                                echo $cart_num['count']; ?></span>
+        </a>
+      </div>
 
 
 
-                <?php
-                if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) {
-                    echo '<a href="logout.php" class="icon">
+      <?php
+      if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) {
+        echo '<a href="logout.php" class="icon">
                         <i class="bx bx-log-out"></i> </a>';
-                } else {
-                    echo ' ';
-                }
-                ?>
+      } else {
+        echo ' ';
+      }
+      ?>
 
-            </div>
-
-      
     </div>
+
+
+  </div>
   </div>
 
   <!-- Cart Items -->
@@ -212,7 +234,6 @@ if (isset($_POST['add_to_favorites'])) {
         }
       } else {
         echo "<div class='alert alert-danger'>No product found</div>";
-
       }
       ?>
     </table>
@@ -258,8 +279,8 @@ if (isset($_POST['add_to_favorites'])) {
       } else {
         echo '<a href="search.php" class="checkout btn">Add Products To Cart</a>';
       }
-      
-       ?>
+
+      ?>
     </div>
 
   </div>
@@ -278,7 +299,7 @@ if (isset($_POST['add_to_favorites'])) {
       ?>
           <div class="product-item">
             <div class="overlay">
-              <a href="productDetails.html" class="product-thumb">
+              <a href="productDetails.php?product_name=<?php echo urlencode($fetch_product['name']); ?>"" class=" product-thumb">
                 <img src="<?php echo $fetch_product['image'] ?>" alt="" />
               </a>
               <span class="discount">40%</span>
@@ -288,12 +309,12 @@ if (isset($_POST['add_to_favorites'])) {
 
               <span><?php echo $fetch_product['category'] ?></span>
               <form action="" method="post" class="form-submit">
-                <a href="productDetails.html"><?php echo $fetch_product['name'] ?></a>
-                <h4><?php echo $fetch_product['price'] ?></h4>
+                <a href="productDetails.php?product_name=<?php echo urlencode($fetch_product['name']); ?>"><?php echo $fetch_product['name'] ?></a>
+                <h4>$<?php echo $fetch_product['price'] ?></h4>
 
                 <input type="hidden" name="product_name" value="<?php echo $fetch_product['name'] ?>">
                 <input type="hidden" name="id" value="<?php echo $fetch_product['idProduct'] ?>">
-                <input type="hidden" name="category" value="<?php echo $fetch_product['category']?>"> 
+                <input type="hidden" name="category" value="<?php echo $fetch_product['category'] ?>">
                 <input type="hidden" name="product_price" value="<?php echo $fetch_product['price'] ?>">
                 <input type="hidden" name="product_image" value="<?php echo $fetch_product['image'] ?>">
 
@@ -303,15 +324,15 @@ if (isset($_POST['add_to_favorites'])) {
 
                 <button type="submit" class="btn btn-link" name="add_to_favorites">
                   <i class="bx bx-heart"></i>
-                
+
                 </button>
 
               </li>
               <li>
 
-                <button type="submit" class="btn btn-link">
+                <a href="search.php?keyword=<?php echo $fetch_product['name']; ?>&search=Search" class="btn btn-link">
                   <i class="bx bx-search"></i>
-                </button>
+                </a>
 
               </li>
               <li>
@@ -369,5 +390,10 @@ if (isset($_POST['add_to_favorites'])) {
   <!-- Custom Script -->
   <script src="./js/index.js"></script>
 </body>
+<script>
+  if (window.history.replaceState) {
+    window.history.replaceState(null, null, window.location.href);
+  }
+</script>
 
 </html>

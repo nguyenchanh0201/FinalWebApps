@@ -4,6 +4,9 @@ include 'config.php';
 session_start();
 // Add to cart
 if (isset($_POST['add_to_cart'])) {
+  if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] != true) {
+    header('Location: login.html');
+  }
   $product_name = $_POST['product_name'];
   $product_price = $_POST['product_price'];
   $product_image = $_POST['product_image'];
@@ -25,6 +28,9 @@ if (isset($_POST['add_to_cart'])) {
 
 // add to favorites
 if (isset($_POST['add_to_favorites'])) {
+  if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] != true) {
+    echo "<script>window.location.href='login.html'</script>";
+  }
   $product_name = $_POST['product_name'];
   $product_price = $_POST['product_price'];
   $product_image = $_POST['product_image'];
@@ -37,12 +43,11 @@ if (isset($_POST['add_to_favorites'])) {
   $stmt->execute();
   $select_favorites = $stmt->get_result();
   if (mysqli_num_rows($select_favorites) > 0) {
-      echo "<script>alert('Product already added to favorites')</script>";
+    echo "<script>alert('Product already added to favorites')</script>";
   } else {
-      $insert_favorites = mysqli_query($conn, "INSERT INTO favorites (name, price, image, id_product, id_user, category) VALUES ('$product_name', '$product_price', '$product_image', $product_id, $user_id, '$product_category')");
+    $insert_favorites = mysqli_query($conn, "INSERT INTO favorites (name, price, image, id_product, id_user, category) VALUES ('$product_name', '$product_price', '$product_image', $product_id, $user_id, '$product_category')");
   }
 }
-
 ?>
 
 
@@ -122,9 +127,17 @@ if (isset($_POST['add_to_favorites'])) {
         </a>
         <a href="favorites.php" class="icon">
           <i class="bx bx-heart"></i>
-          <span class="d-flex"><?php $fav_num_result = mysqli_query($conn, "select count(*) as count from favorites");
-                                $fav_num = mysqli_fetch_assoc($fav_num_result);
-                                echo $fav_num['count']; ?></span>
+          <span class="d-flex"><?php
+                                //Check logged in, if not return 0 favorites
+                                if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] != true) {
+                                  echo 0;
+                                } else {
+                                  //Get favorites count
+                                  $fav_num_result = mysqli_query($conn, "select count(*) as count from favorites where id_user = " . $_SESSION['id']);
+                                  $fav_num = mysqli_fetch_assoc($fav_num_result);
+                                  echo $fav_num['count'];
+                                } ?></span>
+
         </a>
         <a href="cart.php" class="icon">
           <i class="bx bx-cart"></i>
@@ -216,7 +229,7 @@ if (isset($_POST['add_to_favorites'])) {
       ?>
           <div class="product-item">
             <div class="overlay">
-              <a href="productDetails.html" class="product-thumb">
+              <a href="productDetails.php" class="product-thumb">
                 <img src="<?php echo $fetch_product['image'] ?>" alt="" />
               </a>
               <span class="discount">40%</span>
@@ -226,12 +239,12 @@ if (isset($_POST['add_to_favorites'])) {
 
               <span><?php echo $fetch_product['category'] ?></span>
               <form action="" method="post" class="form-submit">
-                <a href="productDetails.html"><?php echo $fetch_product['name'] ?></a>
+              <a href="productDetails.php?product_name=<?php echo urlencode($fetch_product['name']); ?>"><?php echo $fetch_product['name'] ?></a>
                 <h4>$<?php echo $fetch_product['price'] ?></h4>
 
                 <input type="hidden" name="product_name" value="<?php echo $fetch_product['name'] ?>">
                 <input type="hidden" name="id" value="<?php echo $fetch_product['idProduct'] ?>">
-                <input type="hidden" name="category" value="<?php echo $fetch_product['category']?>"> 
+                <input type="hidden" name="category" value="<?php echo $fetch_product['category'] ?>">
                 <input type="hidden" name="product_price" value="<?php echo $fetch_product['price'] ?>">
                 <input type="hidden" name="product_image" value="<?php echo $fetch_product['image'] ?>">
 
@@ -239,16 +252,16 @@ if (isset($_POST['add_to_favorites'])) {
             <ul class="icons">
               <li>
 
-                <button type="submit" class="btn btn-link" class ="add_to_favorites">
+                <button type="submit" class="btn btn-link" class="add_to_favorites">
                   <i class="bx bx-heart"></i>
                 </button>
 
               </li>
               <li>
 
-                <button type="submit" class="btn btn-link">
+                <a href="search.php?keyword=<?php echo $fetch_product['name']; ?>&search=Search" class="btn btn-link">
                   <i class="bx bx-search"></i>
-                </button>
+                </a>
 
               </li>
               <li>
@@ -312,6 +325,11 @@ if (isset($_POST['add_to_favorites'])) {
       });
     });
   </script>
+  <script>
+      if ( window.history.replaceState ) {
+  window.history.replaceState( null, null, window.location.href );
+}
+    </script>
 </body>
 
 </html>
