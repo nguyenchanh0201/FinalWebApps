@@ -1,6 +1,10 @@
 <?php
     include 'config.php';
     session_start();
+     if (!isset($_SESSION['loggedinAdmin']) || $_SESSION['loggedinAdmin'] !== true) {
+        header('Location: loginAdmin.html');
+        exit;
+     }
     
 
     if (isset($_POST['update_product'])) {

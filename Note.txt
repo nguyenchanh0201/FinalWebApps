@@ -12,3 +12,11 @@
 - Sửa trang contact và about 
 - Tạo trang admin cho login admin cũng như là edit, xem doanh thu (ngày tháng năm nếu được), các order
 - Thiếu sort (tối nay hoàn thành)
+
+10/4/2024
+- Thanh toán qua MOMO ATM: 
+Tên	             Số thẻ	            Hạn ghi trên thẻ	OTP	    Trường hợp test
+NGUYEN VAN A    9704 0000 0000 0018	    03/07	        OTP	    Thành công
+NGUYEN VAN A	9704 0000 0000 0026	    03/07	        OTP	    Thẻ bị khóa
+NGUYEN VAN A	9704 0000 0000 0034	    03/07	        OTP	    Nguồn tiền không đủ
+NGUYEN VAN A	9704 0000 0000 0042	    03/07	        OTP	    Hạn mức thẻ

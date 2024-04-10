@@ -3,7 +3,7 @@ session_start();
 include 'config.php';
 
 $total = 0;
-$select_cart_products = mysqli_query($conn, "SELECT * FROM cart");
+$select_cart_products = mysqli_query($conn, "SELECT * FROM cart WHERE id_user = " . $_SESSION['id']);
 while ($fetch_cart_products = mysqli_fetch_assoc($select_cart_products)) {
   $subtotal = $fetch_cart_products['quantity'] * $fetch_cart_products['price'];
   $total += $subtotal;
@@ -64,7 +64,7 @@ while ($fetch_cart_products = mysqli_fetch_assoc($select_cart_products)) {
 
           <?php if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) { ?>
             <li class="nav-item">
-              <a href="profile.php" class="nav-link">
+              <a href="track_order.php" class="nav-link">
                 <?php echo $_SESSION['username']; ?>
               </a>
             </li>
@@ -83,17 +83,33 @@ while ($fetch_cart_products = mysqli_fetch_assoc($select_cart_products)) {
             <i class="bx bx-search"></i>
           </a>
           <a href="favorites.php" class="icon">
-            <i class="bx bx-heart"></i>
-            <span class="d-flex"><?php $fav_num_result = mysqli_query($conn, "select count(*) as count from favorites");
+          <i class="bx bx-heart"></i>
+          <span class="d-flex"><?php
+                                if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) {
+                                  $fav_num_result = mysqli_query($conn, "select count(*) as count from favorites where id_user = " . $_SESSION['id']);
                                   $fav_num = mysqli_fetch_assoc($fav_num_result);
-                                  echo $fav_num['count']; ?></span>
-          </a>
-          <a href="cart.php" class="icon">
-            <i class="bx bx-cart"></i>
-            <span class="d-flex"><?php $cart_num_result = mysqli_query($conn, "select count(*) as count from cart");
-                                  $cart_num = mysqli_fetch_assoc($cart_num_result);
-                                  echo $cart_num['count']; ?></span>
-          </a>
+                                  echo $fav_num['count'];
+                                } else {
+                                  echo 0;
+                                }
+                                ?>
+
+          </span>
+        </a>
+        <a href="cart.php" class="icon">
+          <i class="bx bx-cart"></i>
+          <span class="d-flex">
+            <?php 
+            // check if loggedin
+            if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) {
+              $cart_num_result = mysqli_query($conn, "select count(*) as count from cart where id_user = " . $_SESSION['id']);
+              $cart_num = mysqli_fetch_assoc($cart_num_result);
+              echo $cart_num['count']; 
+            } else {
+              echo 0;
+            }
+             ?></span>
+        </a>
         </div>
 
 
@@ -108,65 +124,10 @@ while ($fetch_cart_products = mysqli_fetch_assoc($select_cart_products)) {
         ?>
       </div>
       <!-- Payment Information -->
-      <p>Payment Information</p>
-      <div class="container">
-        <form action="payprocess.php" method="post">
-          <div class=row>
-            <?php
-            $id = $_SESSION['id'];
-            $sql_get_shipping = mysqli_query($conn, "SELECT * FROM shipping WHERE id = '$id'LIMIT 1");
-            $count = mysqli_num_rows($sql_get_shipping);
-            if ($count > 0) {
-              $row_get_shipping = mysqli_fetch_array($sql_get_shipping);
-              $name = $row_get_shipping['name'];
-              $phone = $row_get_shipping['phone'];
-              $address = $row_get_shipping['address'];
-              $note = $row_get_shipping['note'];
-            } else {
-              $name = '';
-              $phone = '';
-              $address = '';
-              $note = '';
-            }
-            ?>
-            <div class="col-md-8">
-              <h3>Shipping Information And Cart</h3>
-              <ul>
-                <li>Name: <b><?php echo $name; ?></b></li>
-                <li>Phone: <b><?php echo $phone; ?></b></li>
-                <li>Address: <b><?php echo $address; ?></b></li>
-                <li>Note: <b><?php echo $note; ?></b></li>
-              </ul>
-            </div>
-            <style type="text/css">
-              .col-md-4.payment .form-check {
-                margin-top: 11px;
-              }
-            </style>
-            <div class="col-md-4" Payment>
-              <h3>Payment</h3>
-              <div class="form-check">
-                <input class="form-check-input" type="radio" name="payment" value="cash" id="exampleRadios1" checked>
-                <label class="form-check-label" for="exampleRadios1">
-                  Cash On Delivery
-                </label>
-              </div>
-              <div class="form-check">
-                <input class="form-check-input" type="radio" name="payment" value="cash" id="exampleRadios2" checked>
-                <label class="form-check-label" for="exampleRadios2">
-                  MOMO
-                </label>
-              </div>
-              <p style="float:left;">Total amount to be paid:<?php
-                                                              echo number_format($total - 50, 0, ',', '.') . '$' ?> </p>
-              <br>
-              <input type="submit" class="btn btn-primary" value="Place Order">
-            </div>
-          </div>
-      </div>
+      
       <table>
         <?php
-        $select_cart_products = mysqli_query($conn, "Select * from cart");
+        $select_cart_products = mysqli_query($conn, "Select * from cart where id_user = " . $_SESSION['id']);
         if (mysqli_num_rows($select_cart_products) > 0) {
           echo "<tr>
               <th>Product</th>
@@ -200,6 +161,7 @@ while ($fetch_cart_products = mysqli_fetch_assoc($select_cart_products)) {
         }
         ?>
       </table>
+      
       <div class="total-price">
         <table>
           <tr>
@@ -217,12 +179,83 @@ while ($fetch_cart_products = mysqli_fetch_assoc($select_cart_products)) {
                 }
                 echo $total;
                 $_SESSION['total'] = $total;
+                $total_vnd = round($total * 23000);
+                
                 ?></td>
           </tr>
         </table>
 
+
+        
+      <div class="container">
+        <form action="payprocess.php" method="post">
+          <div class=row>
+          
+            <?php
+            $id = $_SESSION['id'];
+            $sql_get_shipping = mysqli_query($conn, "SELECT * FROM shipping WHERE id = '$id'LIMIT 1");
+            $count = mysqli_num_rows($sql_get_shipping);
+            if ($count > 0) {
+              $row_get_shipping = mysqli_fetch_array($sql_get_shipping);
+              $name = $row_get_shipping['name'];
+              $phone = $row_get_shipping['phone'];
+              $address = $row_get_shipping['address'];
+              $note = $row_get_shipping['note'];
+            } else {
+              $name = '';
+              $phone = '';
+              $address = '';
+              $note = '';
+            }
+            ?>
+            <div class="col-md-8">
+            <p>Payment Information</p>
+              <h3>Shipping Information And Cart</h3>
+              <ul>
+                <li>Name: <b><?php echo $name; ?></b></li>
+                <li>Phone: <b><?php echo $phone; ?></b></li>
+                <li>Address: <b><?php echo $address; ?></b></li>
+                <li>Note: <b><?php echo $note; ?></b></li>
+              </ul>
+            </div>
+            <style type="text/css">
+              .col-md-4.payment .form-check {
+                margin-top: 11px;
+              }
+            </style>
+            <div class="col-md-4" Payment>
+              <h3>Payment</h3>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="payment" value="cash" id="exampleRadios1" checked>
+                <label class="form-check-label" for="exampleRadios1">
+                  Cash On Delivery
+                </label>
+              </div>
+              <p style="float:left;">Total amount to be paid:<?php
+                                                              echo number_format($total, 0, ',', '.') . '$' ?> </p>
+              <br>
+              <input type="submit" class="btn btn-primary" value="Place Order">
+            </div>
+            </form>
+            
+          </div>
       </div>
+
+
+        <form class="" method="POST" target="_blank" enctype="application/x-www-form-urlencoded"
+                          action="momo/paymomo.php">
+                          <input type="hidden" value ="<?php echo $total_vnd ?>"name="total_vnd">
+                          <input type="submit" name="momo" value="Pay MOMO QRcode" class ="btn btn-danger">
+            </form>
+      <form class="" method="POST" target="_blank" enctype="application/x-www-form-urlencoded"
+                          action="momo/paymomo_atm.php">
+                          <input type="hidden" value ="<?php echo $total_vnd ?>"name="total_vnd">
+                          <input type="submit" name="momo" value="Pay MOMO ATM" class ="btn btn-danger">
       </form>
+      </div>
+      
+      
+    
   </header>
 
 </body>

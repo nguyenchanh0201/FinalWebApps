@@ -2,6 +2,13 @@
 include 'config.php';
 session_start();
 
+//check logged in
+if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
+  header('Location: login.html');
+  exit;
+}
+
+
 //update query 
 if (isset($_POST['update_product_quantity'])) {
   $update_value = $_POST['update_quantity'];
@@ -115,7 +122,7 @@ if (isset($_POST['add_to_favorites'])) {
           <a href="index.php" class="nav-link">Home</a>
         </li>
         <li class="nav-item">
-          <a href="product.html" class="nav-link">Shop</a>
+          <a href="search.php" class="nav-link">Shop</a>
         </li>
         <li class="nav-item">
           <a href="terms.xml" class="nav-link">Terms</a>
@@ -164,9 +171,17 @@ if (isset($_POST['add_to_favorites'])) {
         </a>
         <a href="cart.php" class="icon">
           <i class="bx bx-cart"></i>
-          <span class="d-flex"><?php $cart_num_result = mysqli_query($conn, "select count(*) as count from cart");
-                                $cart_num = mysqli_fetch_assoc($cart_num_result);
-                                echo $cart_num['count']; ?></span>
+          <span class="d-flex">
+            <?php 
+            // check if loggedin
+            if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) {
+              $cart_num_result = mysqli_query($conn, "select count(*) as count from cart where id_user = " . $_SESSION['id']);
+              $cart_num = mysqli_fetch_assoc($cart_num_result);
+              echo $cart_num['count']; 
+            } else {
+              echo 0;
+            }
+             ?></span>
         </a>
       </div>
 
@@ -191,7 +206,7 @@ if (isset($_POST['add_to_favorites'])) {
   <div class="container cart">
     <table>
       <?php
-      $select_cart_products = mysqli_query($conn, "Select * from cart");
+      $select_cart_products = mysqli_query($conn, "Select * from cart where id_user = " . $_SESSION['id']);
       if (mysqli_num_rows($select_cart_products) > 0) {
         echo "<tr>
           <th>Product</th>
