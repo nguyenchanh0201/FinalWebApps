@@ -1,8 +1,12 @@
 <?php
 session_start();
-if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
-    header('Location: loginAdmin.html');
-    exit;
+if (!isset($_SESSION['loggedinAdmin']) || $_SESSION['loggedinAdmin'] !== true) {
+    
+        // User is not an admin, redirect to login page
+        header('Location: login.php');
+        exit();
+    
+    
 }
 
 
@@ -119,7 +123,7 @@ include 'config.php';
 </head>
 
 <body>
-<h1>Welcome, <?php echo $_SESSION['username']; ?></h1>
+<h1>Welcome, <?php echo $_SESSION['usernameAdmin']; ?></h1>
     <nav>
         <ul>
             <li>

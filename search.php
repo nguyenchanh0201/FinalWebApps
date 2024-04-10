@@ -180,9 +180,17 @@ if (isset($_GET['page-nr'])) {
           </a>
           <a href="cart.php" class="icon">
             <i class="bx bx-cart"></i>
-            <span class="d-flex"><?php $cart_num_result = mysqli_query($conn, "select count(*) as count from cart");
-                                  $cart_num = mysqli_fetch_assoc($cart_num_result);
-                                  echo $cart_num['count']; ?></span>
+            <span class="d-flex">
+            <?php 
+            // check if loggedin
+            if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) {
+              $cart_num_result = mysqli_query($conn, "select count(*) as count from cart where id_user = " . $_SESSION['id']);
+              $cart_num = mysqli_fetch_assoc($cart_num_result);
+              echo $cart_num['count']; 
+            } else {
+              echo 0;
+            }
+             ?></span>
           </a>
           <?php
           if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) {

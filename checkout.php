@@ -75,17 +75,33 @@ include 'config.php';
             <i class="bx bx-search"></i>
           </a>
           <a href="favorites.php" class="icon">
-            <i class="bx bx-heart"></i>
-            <span class="d-flex"><?php $fav_num_result = mysqli_query($conn, "select count(*) as count from favorites");
+          <i class="bx bx-heart"></i>
+          <span class="d-flex"><?php
+                                if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) {
+                                  $fav_num_result = mysqli_query($conn, "select count(*) as count from favorites where id_user = " . $_SESSION['id']);
                                   $fav_num = mysqli_fetch_assoc($fav_num_result);
-                                  echo $fav_num['count']; ?></span>
-          </a>
-          <a href="cart.php" class="icon">
-            <i class="bx bx-cart"></i>
-            <span class="d-flex"><?php $cart_num_result = mysqli_query($conn, "select count(*) as count from cart");
-                                  $cart_num = mysqli_fetch_assoc($cart_num_result);
-                                  echo $cart_num['count']; ?></span>
-          </a>
+                                  echo $fav_num['count'];
+                                } else {
+                                  echo 0;
+                                }
+                                ?>
+
+          </span>
+        </a>
+        <a href="cart.php" class="icon">
+          <i class="bx bx-cart"></i>
+          <span class="d-flex">
+            <?php 
+            // check if loggedin
+            if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) {
+              $cart_num_result = mysqli_query($conn, "select count(*) as count from cart where id_user = " . $_SESSION['id']);
+              $cart_num = mysqli_fetch_assoc($cart_num_result);
+              echo $cart_num['count']; 
+            } else {
+              echo 0;
+            }
+             ?></span>
+        </a>
         </div>
 
 
@@ -182,7 +198,7 @@ include 'config.php';
   <div class="container cart">
     <table>
       <?php
-      $select_cart_products = mysqli_query($conn, "Select * from cart");
+      $select_cart_products = mysqli_query($conn, "Select * from cart where id_user = " . $_SESSION['id'] );
       if (mysqli_num_rows($select_cart_products) > 0) {
         echo "<tr>
               <th>Product</th>

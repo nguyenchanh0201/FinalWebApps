@@ -44,6 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                         $_SESSION["username"] = $username;
                         $_SESSION["id"] = $id;
                         $_SESSION["loggedin"] = true;
+                        $_SESSION['user_type'] = 'user';
 
                         //Redirect user to index page...
                         header("location: index.php");

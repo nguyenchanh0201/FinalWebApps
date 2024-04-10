@@ -7,7 +7,7 @@
     $code_order = rand(0,9999);
     $cart_payment= $_POST['payment'];
     if (isset($_SESSION['total'])) {
-        $total = $_SESSION['total'];
+        $total = $_SESSION['total']*23000;
       }else {
         // Handle the case where $_SESSION['total'] is not set
         $total = 0;
@@ -31,6 +31,7 @@
     //Clear the cart
     $delete_cart = "DELETE FROM cart WHERE id_user = '".$id."'";
     $cart_query = mysqli_query($conn, $delete_cart);
+    
 
 
     if (!$order_detail_query) {
