@@ -252,7 +252,7 @@ if (isset($_POST['add_to_favorites'])) {
             <ul class="icons">
               <li>
 
-                <button type="submit" class="btn btn-link" class="add_to_favorites">
+                <button type="submit" class="btn btn-link" name="add_to_favorites">
                   <i class="bx bx-heart"></i>
                 </button>
 

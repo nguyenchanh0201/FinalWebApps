@@ -146,7 +146,7 @@
 <body>
     
 
-<h1>Welcome, <?php echo $_SESSION['username']; ?></h1>
+<h1>Welcome, <?php echo $_SESSION['usernameAdmin']; ?></h1>
     <nav>
         <ul>
             <li>

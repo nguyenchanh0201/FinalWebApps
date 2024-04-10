@@ -162,7 +162,7 @@ if (isset($_POST['add_to_cart'])) {
                                         <a href="search.php" class="hero-btn">SHOP NOW</a>
                                     </div>
                                     <div class="right">
-                                        <img class="img1" src="./images/kb24.png" alt="">
+                                        <img class="img1" src="./images/allen2.png" alt="">
                                     </div>
                                 </div>
                             </li>
