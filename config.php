@@ -17,3 +17,4 @@ $conn = mysqli_connect(
 
 if ($conn == false)
     dir('Error: Cannot connect');
+?>
