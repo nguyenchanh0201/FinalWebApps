@@ -2,7 +2,7 @@
 session_start(); // Start the session at the beginning
 
 if (!isset($_SESSION['loggedinAdmin']) || $_SESSION['loggedinAdmin'] !== true) {
-    header("location: loginAdmin.php");
+    header("location: loginAdmin.html");
     exit;
 }
 
