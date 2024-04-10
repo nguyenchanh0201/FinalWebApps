@@ -10,11 +10,11 @@
         die("Query failed");
         if($delete_query){
             echo "Deleted successfully";
-            header("Location: viewProduct.php");
+            header("Location: adminPage.php");
         }
         else {
             echo "Failed to delete";
-            header("Location: viewProduct.php");
+            header("Location: adminPage.php");
         }
     }
     //Delete cart item
