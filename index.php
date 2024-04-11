@@ -242,6 +242,9 @@ if (isset($_POST['add_to_favorites'])) {
             <div class="cat">
                 <a href="search.php?keyword=Nike Basketball&search=Search">
                     <img src="./images/nike.png" alt="" />
+                    <div>
+                        <p>NIKE</p>
+                    </div>
                     
                 </a>
 
@@ -249,17 +252,25 @@ if (isset($_POST['add_to_favorites'])) {
             <div class="cat">
                 <a href="search.php?keyword=Adidas Basketball&search=Search">
                     <img src="./images/adidas.png" alt="" />
+                    <div>
+                        <p>ADIDAS</p>
+                    </div>
                     
             </div>
             <div class="cat">
                 <a href="search.php?keyword=Puma Basketball&search=Search">
                     <img src="./images/puma.png" alt="" />
+                    <div>
+                        <p>PUMA</p>
+            </div>
                     
             </div>
             <div class="cat">
                 <a href="search.php?keyword=New Balance Basketball&search=Search">
-                    <img src="./images/new-balance.png" alt="" />
-                    
+                    <img src="./images/nb.png" alt="" />
+                    <div>
+                        <p>NEW BALANCE</p>
+                    </div>
             </div>
 
         </div>
